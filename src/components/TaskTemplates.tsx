@@ -509,7 +509,7 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
     <div>
       {/* Hero Section with Dynamic Content */}
       <div className="bg-gradient-to-r from-[#002B7F] to-[#0038FF] text-white rounded-xl overflow-hidden mb-10 shadow-xl">
-        <div className="flex flex-col md:flex-row">
+        <div className="flex flex-col md:flex-row h-[400px]">
           <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center relative z-10">
             {/* Animated decorative elements */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10 pointer-events-none">
@@ -539,14 +539,16 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
               </div>
             </div>
           </div>
-          <div className="md:w-1/2 relative">
-            <img 
-              src={currentHero.image}
-              alt={currentHero.title} 
-              className="w-full h-full object-cover transition-opacity duration-500"
-              style={{ minHeight: "300px" }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#002B7F]/50 to-transparent pointer-events-none"></div>
+          <div className="md:w-1/2 relative h-full">
+            <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+              <img 
+                src={currentHero.image}
+                alt={currentHero.title} 
+                className="w-full h-full object-cover transition-opacity duration-500"
+                style={{ objectPosition: "center" }}
+              />
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#002B7F]/30 to-transparent pointer-events-none"></div>
             <div className="absolute bottom-6 right-6">
               <div className="glass-card p-3 shadow-lg">
                 <div className="flex items-center">
@@ -899,15 +901,13 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
               <div className="flex space-x-2">
                 <button 
                   onClick={prevTestimonial}
-                  className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Previous testimonial"
+                  className="w-8 h-8 rounded-full bg-blue-800 flex items-center justify-center hover:bg-blue-700 transition-colors"
                 >
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 <button 
                   onClick={nextTestimonial}
-                  className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
-                  aria-label="Next testimonial"
+                  className="w-8 h-8 rounded-full bg-blue-800 flex items-center justify-center hover:bg-blue-700 transition-colors"
                 >
                   <ChevronRight className="w-5 h-5" />
                 </button>

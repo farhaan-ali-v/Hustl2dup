@@ -79,7 +79,7 @@
   
   .glass-card {
     @apply rounded-xl backdrop-blur-sm border border-white/20;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
   }
   
   .level-badge {
@@ -341,4 +341,30 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: #a1a1a1;
+}
+
+/* Hero section specific styles */
+.hero-section {
+  height: 400px;
+  overflow: hidden;
+}
+
+.hero-image-container {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: opacity 0.5s ease;
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(0, 43, 127, 0.3), transparent);
 }
