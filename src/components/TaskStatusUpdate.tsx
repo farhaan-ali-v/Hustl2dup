@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Package, Clock, Truck, Flag, CheckCircle, MessageSquare, ArrowRight, Star, Trophy, Zap, Shield, VolumeUp } from 'lucide-react';
+import { X, Package, Clock, Truck, Flag, CheckCircle, MessageSquare, ArrowRight, Star, Trophy, Zap, Shield, Volume as VolumeUp } from 'lucide-react';
 import { taskService, taskProgressService, notificationService } from '../lib/database';
 import { auth } from '../lib/firebase';
 import toast from 'react-hot-toast';
