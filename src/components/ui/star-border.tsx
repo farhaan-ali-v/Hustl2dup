@@ -23,7 +23,7 @@ export function StarBorder<T extends ElementType = "div">({
   return (
     <Component 
       className={cn(
-        "relative inline-block py-[1px] overflow-hidden rounded-[20px]",
+        "relative inline-block overflow-hidden rounded-[20px]",
         className
       )} 
       {...props}
@@ -48,11 +48,7 @@ export function StarBorder<T extends ElementType = "div">({
           animationDuration: speed,
         }}
       />
-      <div className={cn(
-        "relative z-1 border text-foreground text-center text-base py-4 px-6 rounded-[20px]",
-        "bg-gradient-to-b from-background/90 to-muted/90 border-border/40",
-        "dark:from-background dark:to-muted dark:border-border"
-      )}>
+      <div className="relative z-1">
         {children}
       </div>
     </Component>

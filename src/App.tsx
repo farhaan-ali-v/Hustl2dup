@@ -23,7 +23,6 @@ import { subscribeToAuthChanges } from './lib/auth';
 import { notificationService } from './lib/database';
 import SafeWalkRequestForm from './components/SafeWalkRequestForm';
 import VoiceAssistant from './components/VoiceAssistant';
-import { StarBorder } from './components/ui/star-border';
 
 const CATEGORY_GROUPS = [
   {
@@ -535,37 +534,31 @@ const App: React.FC = () => {
                         <span className="sm:hidden">Exit</span>
                       </button>
 
-                      <StarBorder color="#FF5A1F">
-                        <button 
-                          onClick={() => setShowCreateTask(true)}
-                          className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-4 py-2 rounded-lg font-semibold flex items-center"
-                        >
-                          <Zap className="w-4 h-4 mr-2" />
-                          Post Task
-                        </button>
-                      </StarBorder>
+                      <button 
+                        onClick={() => setShowCreateTask(true)}
+                        className="btn-gradient-secondary btn-shine px-4 py-2 flex items-center"
+                      >
+                        <Zap className="w-4 h-4 mr-2" />
+                        Post Task
+                      </button>
                     </>
                   ) : (
                     <>
-                      <StarBorder color="#0038FF">
-                        <button
-                          onClick={handleSignIn}
-                          className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-2 rounded-lg font-semibold flex items-center"
-                        >
-                          <LogIn className="w-4 h-4 mr-2" />
-                          <span>Sign In</span>
-                        </button>
-                      </StarBorder>
+                      <button
+                        onClick={handleSignIn}
+                        className="btn-gradient-primary btn-shine px-4 py-2 flex items-center"
+                      >
+                        <LogIn className="w-4 h-4 mr-2" />
+                        <span>Sign In</span>
+                      </button>
                       
-                      <StarBorder color="#FF5A1F">
-                        <button
-                          onClick={handleSignUp}
-                          className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-4 py-2 rounded-lg font-semibold flex items-center"
-                        >
-                          <UserPlus className="w-4 h-4 mr-2" />
-                          <span>Sign Up</span>
-                        </button>
-                      </StarBorder>
+                      <button
+                        onClick={handleSignUp}
+                        className="btn-gradient-secondary btn-shine px-4 py-2 flex items-center"
+                      >
+                        <UserPlus className="w-4 h-4 mr-2" />
+                        <span>Sign Up</span>
+                      </button>
                     </>
                   )}
                 </div>
@@ -598,22 +591,18 @@ const App: React.FC = () => {
                       Please sign in to browse and accept tasks from other users.
                     </p>
                     <div className="flex space-x-4 justify-center">
-                      <StarBorder color="#0038FF">
-                        <button
-                          onClick={handleSignIn}
-                          className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-6 py-2 rounded-lg font-semibold"
-                        >
-                          Sign In
-                        </button>
-                      </StarBorder>
-                      <StarBorder color="#FF5A1F">
-                        <button
-                          onClick={handleSignUp}
-                          className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-6 py-2 rounded-lg font-semibold"
-                        >
-                          Sign Up
-                        </button>
-                      </StarBorder>
+                      <button
+                        onClick={handleSignIn}
+                        className="btn-gradient-primary btn-shine px-6 py-2"
+                      >
+                        Sign In
+                      </button>
+                      <button
+                        onClick={handleSignUp}
+                        className="btn-gradient-secondary btn-shine px-6 py-2"
+                      >
+                        Sign Up
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -678,15 +667,13 @@ const App: React.FC = () => {
                   </div>
 
                   <div className="flex justify-center space-x-4 mt-12">
-                    <StarBorder color="#FF5A1F">
-                      <button 
-                        onClick={() => setCurrentView('templates')}
-                        className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-8 py-4 rounded-lg font-semibold text-lg flex items-center"
-                      >
-                        Get Started
-                        <ArrowRight className="ml-2 w-6 h-6" />
-                      </button>
-                    </StarBorder>
+                    <button 
+                      onClick={() => setCurrentView('templates')}
+                      className="btn-gradient-secondary btn-shine px-8 py-4 text-lg flex items-center"
+                    >
+                      Get Started
+                      <ArrowRight className="ml-2 w-6 h-6" />
+                    </button>
                     <button 
                       onClick={() => setShowLearnMore(true)}
                       className="bg-white text-[#0F2557] px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition duration-200 shadow-md"
@@ -782,22 +769,18 @@ const App: React.FC = () => {
                       Please sign in to access your messages and chat with other users.
                     </p>
                     <div className="flex space-x-4 justify-center">
-                      <StarBorder color="#0038FF">
-                        <button
-                          onClick={handleSignIn}
-                          className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-6 py-2 rounded-lg font-semibold"
-                        >
-                          Sign In
-                        </button>
-                      </StarBorder>
-                      <StarBorder color="#FF5A1F">
-                        <button
-                          onClick={handleSignUp}
-                          className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-6 py-2 rounded-lg font-semibold"
-                        >
-                          Sign Up
-                        </button>
-                      </StarBorder>
+                      <button
+                        onClick={handleSignIn}
+                        className="btn-gradient-primary btn-shine px-6 py-2"
+                      >
+                        Sign In
+                      </button>
+                      <button
+                        onClick={handleSignUp}
+                        className="btn-gradient-secondary btn-shine px-6 py-2"
+                      >
+                        Sign Up
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -820,22 +803,18 @@ const App: React.FC = () => {
                       Please sign in to view and manage your profile.
                     </p>
                     <div className="flex space-x-4 justify-center">
-                      <StarBorder color="#0038FF">
-                        <button
-                          onClick={handleSignIn}
-                          className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-6 py-2 rounded-lg font-semibold"
-                        >
-                          Sign In
-                        </button>
-                      </StarBorder>
-                      <StarBorder color="#FF5A1F">
-                        <button
-                          onClick={handleSignUp}
-                          className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-6 py-2 rounded-lg font-semibold"
-                        >
-                          Sign Up
-                        </button>
-                      </StarBorder>
+                      <button
+                        onClick={handleSignIn}
+                        className="btn-gradient-primary btn-shine px-6 py-2"
+                      >
+                        Sign In
+                      </button>
+                      <button
+                        onClick={handleSignUp}
+                        className="btn-gradient-secondary btn-shine px-6 py-2"
+                      >
+                        Sign Up
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -933,15 +912,13 @@ const App: React.FC = () => {
 
           {/* Floating Voice Assistant Button */}
           <div className="fixed bottom-6 right-6 z-30">
-            <StarBorder color="#0038FF">
-              <button
-                onClick={toggleVoiceAssistant}
-                className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all"
-                title="Voice Assistant"
-              >
-                <Volume2 className="w-6 h-6" />
-              </button>
-            </StarBorder>
+            <button
+              onClick={toggleVoiceAssistant}
+              className="btn-gradient-primary btn-shine p-4 rounded-full flex items-center justify-center"
+              title="Voice Assistant"
+            >
+              <Volume2 className="w-6 h-6" />
+            </button>
           </div>
         </>
       )}

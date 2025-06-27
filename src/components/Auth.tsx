@@ -251,7 +251,7 @@ const Auth: React.FC<AuthProps> = ({ initialMode = 'signin', onClose }) => {
               <button
                 type="submit"
                 disabled={resetLoading}
-                className="flex-1 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#0F2557] hover:bg-[#0A1B3D] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0F2557] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white btn-gradient-primary btn-shine disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {resetLoading ? (
                   <Loader className="w-5 h-5 animate-spin" />
@@ -322,7 +322,7 @@ const Auth: React.FC<AuthProps> = ({ initialMode = 'signin', onClose }) => {
               setIsSignUp(false);
               setSignupSuccess(false);
             }}
-            className="bg-[#0F2557] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#0A1B3D] transition duration-200"
+            className="btn-gradient-primary btn-shine px-6 py-3"
           >
             Sign In Now
           </button>
@@ -469,7 +469,7 @@ const Auth: React.FC<AuthProps> = ({ initialMode = 'signin', onClose }) => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#0F2557] hover:bg-[#0A1B3D] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0F2557] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full btn-gradient-primary btn-shine py-2 px-4 rounded-md disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
             >
               {loading ? (
                 <Loader className="w-5 h-5 animate-spin" />

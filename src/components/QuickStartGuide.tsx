@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowRight, Package, Star, DollarSign, Shield, X, Coffee, Book, Dog, Car, GraduationCap, Users, Printer, ChevronLeft, ChevronRight, Volume2, VolumeX } from 'lucide-react';
 import { elevenLabsService } from '../lib/elevenLabsService';
-import { StarBorder } from './ui/star-border';
 
 interface QuickStartGuideProps {
   onClose: () => void;
@@ -228,43 +227,39 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
               <h3 className="text-xl font-semibold text-center">What would you like to do?</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <StarBorder color="#FF5A1F">
-                  <button
-                    onClick={() => {
-                      markGuideAsShown();
-                      onCreateTask?.();
-                    }}
-                    className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white p-5 rounded-lg group w-full"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <Package className="w-7 h-7" />
-                      <ArrowRight className="w-5 h-5 transform group-hover:translate-x-2 transition-transform" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-left mb-2">Post a Task</h3>
-                    <p className="text-left text-orange-100 text-sm">
-                      Need help with something? Create a task and find someone to help you.
-                    </p>
-                  </button>
-                </StarBorder>
+                <button
+                  onClick={() => {
+                    markGuideAsShown();
+                    onCreateTask?.();
+                  }}
+                  className="btn-gradient-secondary btn-shine p-5 rounded-lg group w-full"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <Package className="w-7 h-7" />
+                    <ArrowRight className="w-5 h-5 transform group-hover:translate-x-2 transition-transform" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-left mb-2">Post a Task</h3>
+                  <p className="text-left text-orange-100 text-sm">
+                    Need help with something? Create a task and find someone to help you.
+                  </p>
+                </button>
 
-                <StarBorder color="#0038FF">
-                  <button
-                    onClick={() => {
-                      markGuideAsShown();
-                      onBrowseTasks?.();
-                    }}
-                    className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white p-5 rounded-lg group w-full"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <DollarSign className="w-7 h-7" />
-                      <ArrowRight className="w-5 h-5 transform group-hover:translate-x-2 transition-transform" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-left mb-2">Browse Tasks</h3>
-                    <p className="text-left text-blue-100 text-sm">
-                      Want to earn money? Find tasks you can help with around campus.
-                    </p>
-                  </button>
-                </StarBorder>
+                <button
+                  onClick={() => {
+                    markGuideAsShown();
+                    onBrowseTasks?.();
+                  }}
+                  className="btn-gradient-primary btn-shine p-5 rounded-lg group w-full"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <DollarSign className="w-7 h-7" />
+                    <ArrowRight className="w-5 h-5 transform group-hover:translate-x-2 transition-transform" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-left mb-2">Browse Tasks</h3>
+                  <p className="text-left text-blue-100 text-sm">
+                    Want to earn money? Find tasks you can help with around campus.
+                  </p>
+                </button>
               </div>
             </div>
           )}
@@ -355,25 +350,21 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
           )}
 
           {currentStep < 3 ? (
-            <StarBorder color="#0038FF">
-              <button
-                onClick={nextStep}
-                className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-5 py-2 rounded-lg flex items-center text-sm font-semibold"
-              >
-                Next
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </button>
-            </StarBorder>
+            <button
+              onClick={nextStep}
+              className="btn-gradient-primary btn-shine px-5 py-2 text-sm font-semibold flex items-center"
+            >
+              Next
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </button>
           ) : (
-            <StarBorder color="#FF5A1F">
-              <button
-                onClick={handleGetStarted}
-                className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-5 py-2 rounded-lg flex items-center text-sm font-semibold"
-              >
-                Get Started
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </button>
-            </StarBorder>
+            <button
+              onClick={handleGetStarted}
+              className="btn-gradient-secondary btn-shine px-5 py-2 text-sm font-semibold flex items-center"
+            >
+              Get Started
+              <ArrowRight className="w-4 h-4 ml-2" />
+            </button>
           )}
         </div>
       </div>
