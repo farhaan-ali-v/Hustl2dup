@@ -18,9 +18,9 @@ export const elevenLabsService = {
    * @returns A Promise that resolves with the HTMLAudioElement if successful, or null if an error occurs.
    */
   async speakText(text: string, options?: SpeakOptions): Promise<HTMLAudioElement | null> {
-    if (!FIREBASE_FUNCTIONS_URL) {
-      toast.error('ElevenLabs function URL is not configured. Please deploy your function and update VITE_FIREBASE_FUNCTIONS_URL in your .env file.');
-      console.error('ElevenLabs function URL is not configured.');
+    if (!FIREBASE_FUNCTIONS_URL || FIREBASE_FUNCTIONS_URL === 'YOUR_DEPLOYED_FUNCTION_URL_HERE') {
+      console.warn('ElevenLabs function URL is not configured. Speech functionality disabled.');
+      toast.error('Speech functionality is not configured yet. Please follow the setup instructions in README-ELEVENLABS-SETUP.md');
       return null;
     }
 
