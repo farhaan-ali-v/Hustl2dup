@@ -186,6 +186,33 @@ const App: React.FC = () => {
     const handleOpenSafeWalk = () => {
       setShowSafeWalk(true);
     };
+    
+    const handleOpenWallet = () => {
+      if (user) {
+        setShowWallet(true);
+      } else {
+        toast.error('Please sign in to access your wallet');
+        setShowAuth(true);
+        setAuthMode('signin');
+      }
+    };
+    
+    const handleOpenProfile = () => {
+      if (user) {
+        setCurrentView('profile');
+      } else {
+        toast.error('Please sign in to view your profile');
+        setShowAuth(true);
+        setAuthMode('signin');
+      }
+    };
+    
+    const handleViewTask = (event: any) => {
+      if (event.detail && event.detail.taskId) {
+        setSelectedTaskId(event.detail.taskId);
+        setCurrentView('marketplace');
+      }
+    };
 
     window.addEventListener('create-task', handleCreateTask);
     window.addEventListener('view-tasks', handleViewTasks);
@@ -193,6 +220,9 @@ const App: React.FC = () => {
     window.addEventListener('open-support', handleOpenSupport);
     window.addEventListener('open-safety', handleOpenSafety);
     window.addEventListener('open-safewalk', handleOpenSafeWalk);
+    window.addEventListener('open-wallet', handleOpenWallet);
+    window.addEventListener('open-profile', handleOpenProfile);
+    window.addEventListener('view-task', handleViewTask);
 
     return () => {
       unsubscribe();
@@ -202,6 +232,9 @@ const App: React.FC = () => {
       window.removeEventListener('open-support', handleOpenSupport);
       window.removeEventListener('open-safety', handleOpenSafety);
       window.removeEventListener('open-safewalk', handleOpenSafeWalk);
+      window.removeEventListener('open-wallet', handleOpenWallet);
+      window.removeEventListener('open-profile', handleOpenProfile);
+      window.removeEventListener('view-task', handleViewTask);
     };
   }, [user]);
 
@@ -892,7 +925,10 @@ const App: React.FC = () => {
           )}
 
           {showVoiceAssistant && (
-            <VoiceAssistant onClose={() => setShowVoiceAssistant(false)} />
+            <VoiceAssistant 
+              onClose={() => setShowVoiceAssistant(false)} 
+              userLocation={userLocation}
+            />
           )}
 
           {/* Floating Voice Assistant Button */}

@@ -124,5 +124,43 @@ export const elevenLabsService = {
       console.error('Error getting character count:', error);
       return null;
     }
+  },
+
+  /**
+   * Transcribes speech to text using the Web Speech API
+   * @param callback Function to call with the transcribed text
+   * @returns A function to stop listening
+   */
+  startSpeechRecognition(callback: (text: string) => void): () => void {
+    if (!('SpeechRecognition' in window) && !('webkitSpeechRecognition' in window)) {
+      toast.error('Speech recognition is not supported in your browser');
+      return () => {};
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    
+    recognition.onresult = (event: any) => {
+      const transcript = Array.from(event.results)
+        .map((result: any) => result[0])
+        .map((result: any) => result.transcript)
+        .join('');
+      
+      callback(transcript);
+    };
+    
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error);
+      toast.error(`Speech recognition error: ${event.error}`);
+    };
+    
+    recognition.start();
+    
+    return () => {
+      recognition.stop();
+    };
   }
 };
