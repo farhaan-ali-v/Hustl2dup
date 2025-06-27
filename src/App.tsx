@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Zap, ArrowRight, BookOpen, Coffee, Package, Star, Search, Filter, Bell, Bike, Dumbbell, Users, Utensils, Dog, Car, PartyPopper, GraduationCap, MessageSquare, Shield, HelpCircle, Info, Settings, Menu, ChevronDown, Wallet, ListTodo, Home, User, LogIn, UserPlus, Mail, Award, Trophy } from 'lucide-react';
+import { Zap, ArrowRight, BookOpen, Coffee, Package, Star, Search, Filter, Bell, Bike, Dumbbell, Users, Utensils, Dog, Car, PartyPopper, GraduationCap, MessageSquare, Shield, HelpCircle, Info, Settings, Menu, ChevronDown, Wallet, ListTodo, Home, User, LogIn, UserPlus, Mail, Award, Trophy, Volume2 } from 'lucide-react';
 import { Toaster, toast } from 'react-hot-toast';
 import { useGeolocation } from './hooks/useGeolocation';
 import { Location } from './lib/locationService';
@@ -22,6 +22,8 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { subscribeToAuthChanges } from './lib/auth';
 import { notificationService } from './lib/database';
 import SafeWalkRequestForm from './components/SafeWalkRequestForm';
+import VoiceAssistant from './components/VoiceAssistant';
+import { StarBorder } from './components/ui/star-border';
 
 const CATEGORY_GROUPS = [
   {
@@ -107,6 +109,7 @@ const App: React.FC = () => {
   const [showAuth, setShowAuth] = useState(false);
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [showSafeWalk, setShowSafeWalk] = useState(false);
+  const [showVoiceAssistant, setShowVoiceAssistant] = useState(false);
   
   const { location: userLocation, loading: locationLoading, error: locationError } = useGeolocation({
     timeout: 6000,
@@ -289,6 +292,10 @@ const App: React.FC = () => {
     }, 'request a SafeWalk');
   };
 
+  const toggleVoiceAssistant = () => {
+    setShowVoiceAssistant(!showVoiceAssistant);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Toaster position="top-center" />
@@ -425,6 +432,16 @@ const App: React.FC = () => {
                             <Shield className="w-4 h-4 mr-2" />
                             Request SafeWalk
                           </button>
+                          <button
+                            onClick={() => {
+                              toggleVoiceAssistant();
+                              setShowNavDropdown(false);
+                            }}
+                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-[#0038FF] flex items-center transition-colors"
+                          >
+                            <Volume2 className="w-4 h-4 mr-2" />
+                            Voice Assistant
+                          </button>
                           <a
                             href={`mailto:hustlapp@outlook.com?subject=Support Request`}
                             className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-[#0038FF] flex items-center transition-colors"
@@ -440,6 +457,15 @@ const App: React.FC = () => {
 
                 {/* Right side - User actions */}
                 <div className="flex items-center space-x-4">
+                  {/* Voice Assistant Button */}
+                  <button
+                    onClick={toggleVoiceAssistant}
+                    className="text-gray-600 hover:text-gray-900 transition-colors p-2 rounded-full hover:bg-gray-100"
+                    title="Voice Assistant"
+                  >
+                    <Volume2 className="w-5 h-5" />
+                  </button>
+                  
                   {user ? (
                     <>
                       <div className="relative">
@@ -476,31 +502,37 @@ const App: React.FC = () => {
                         <span className="sm:hidden">Exit</span>
                       </button>
 
-                      <button 
-                        onClick={() => setShowCreateTask(true)}
-                        className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition duration-200 shadow-md flex items-center"
-                      >
-                        <Zap className="w-4 h-4 mr-2" />
-                        Post Task
-                      </button>
+                      <StarBorder color="#FF5A1F">
+                        <button 
+                          onClick={() => setShowCreateTask(true)}
+                          className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-4 py-2 rounded-lg font-semibold flex items-center"
+                        >
+                          <Zap className="w-4 h-4 mr-2" />
+                          Post Task
+                        </button>
+                      </StarBorder>
                     </>
                   ) : (
                     <>
-                      <button
-                        onClick={handleSignIn}
-                        className="flex items-center space-x-1 px-4 py-2 rounded-lg bg-[#0038FF] text-white hover:bg-[#0021A5] transition-colors font-semibold shadow-md"
-                      >
-                        <LogIn className="w-4 h-4" />
-                        <span>Sign In</span>
-                      </button>
+                      <StarBorder color="#0038FF">
+                        <button
+                          onClick={handleSignIn}
+                          className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-2 rounded-lg font-semibold flex items-center"
+                        >
+                          <LogIn className="w-4 h-4 mr-2" />
+                          <span>Sign In</span>
+                        </button>
+                      </StarBorder>
                       
-                      <button
-                        onClick={handleSignUp}
-                        className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition duration-200 shadow-md flex items-center"
-                      >
-                        <UserPlus className="w-4 h-4 mr-2" />
-                        <span>Sign Up</span>
-                      </button>
+                      <StarBorder color="#FF5A1F">
+                        <button
+                          onClick={handleSignUp}
+                          className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-4 py-2 rounded-lg font-semibold flex items-center"
+                        >
+                          <UserPlus className="w-4 h-4 mr-2" />
+                          <span>Sign Up</span>
+                        </button>
+                      </StarBorder>
                     </>
                   )}
                 </div>
@@ -533,18 +565,22 @@ const App: React.FC = () => {
                       Please sign in to browse and accept tasks from other users.
                     </p>
                     <div className="flex space-x-4 justify-center">
-                      <button
-                        onClick={handleSignIn}
-                        className="bg-[#0038FF] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#0021A5] transition-colors shadow-md"
-                      >
-                        Sign In
-                      </button>
-                      <button
-                        onClick={handleSignUp}
-                        className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-6 py-2 rounded-lg font-semibold hover:opacity-90 transition-colors shadow-md"
-                      >
-                        Sign Up
-                      </button>
+                      <StarBorder color="#0038FF">
+                        <button
+                          onClick={handleSignIn}
+                          className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-6 py-2 rounded-lg font-semibold"
+                        >
+                          Sign In
+                        </button>
+                      </StarBorder>
+                      <StarBorder color="#FF5A1F">
+                        <button
+                          onClick={handleSignUp}
+                          className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-6 py-2 rounded-lg font-semibold"
+                        >
+                          Sign Up
+                        </button>
+                      </StarBorder>
                     </div>
                   </div>
                 </div>
@@ -609,13 +645,15 @@ const App: React.FC = () => {
                   </div>
 
                   <div className="flex justify-center space-x-4 mt-12">
-                    <button 
-                      onClick={() => setCurrentView('templates')}
-                      className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-8 py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition duration-200 flex items-center shadow-lg"
-                    >
-                      Get Started
-                      <ArrowRight className="ml-2 w-6 h-6" />
-                    </button>
+                    <StarBorder color="#FF5A1F">
+                      <button 
+                        onClick={() => setCurrentView('templates')}
+                        className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-8 py-4 rounded-lg font-semibold text-lg flex items-center"
+                      >
+                        Get Started
+                        <ArrowRight className="ml-2 w-6 h-6" />
+                      </button>
+                    </StarBorder>
                     <button 
                       onClick={() => setShowLearnMore(true)}
                       className="bg-white text-[#0F2557] px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition duration-200 shadow-md"
@@ -711,18 +749,22 @@ const App: React.FC = () => {
                       Please sign in to access your messages and chat with other users.
                     </p>
                     <div className="flex space-x-4 justify-center">
-                      <button
-                        onClick={handleSignIn}
-                        className="bg-[#0038FF] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#0021A5] transition-colors shadow-md"
-                      >
-                        Sign In
-                      </button>
-                      <button
-                        onClick={handleSignUp}
-                        className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-6 py-2 rounded-lg font-semibold hover:opacity-90 transition-colors shadow-md"
-                      >
-                        Sign Up
-                      </button>
+                      <StarBorder color="#0038FF">
+                        <button
+                          onClick={handleSignIn}
+                          className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-6 py-2 rounded-lg font-semibold"
+                        >
+                          Sign In
+                        </button>
+                      </StarBorder>
+                      <StarBorder color="#FF5A1F">
+                        <button
+                          onClick={handleSignUp}
+                          className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-6 py-2 rounded-lg font-semibold"
+                        >
+                          Sign Up
+                        </button>
+                      </StarBorder>
                     </div>
                   </div>
                 </div>
@@ -745,18 +787,22 @@ const App: React.FC = () => {
                       Please sign in to view and manage your profile.
                     </p>
                     <div className="flex space-x-4 justify-center">
-                      <button
-                        onClick={handleSignIn}
-                        className="bg-[#0038FF] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#0021A5] transition-colors shadow-md"
-                      >
-                        Sign In
-                      </button>
-                      <button
-                        onClick={handleSignUp}
-                        className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-6 py-2 rounded-lg font-semibold hover:opacity-90 transition-colors shadow-md"
-                      >
-                        Sign Up
-                      </button>
+                      <StarBorder color="#0038FF">
+                        <button
+                          onClick={handleSignIn}
+                          className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-6 py-2 rounded-lg font-semibold"
+                        >
+                          Sign In
+                        </button>
+                      </StarBorder>
+                      <StarBorder color="#FF5A1F">
+                        <button
+                          onClick={handleSignUp}
+                          className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-6 py-2 rounded-lg font-semibold"
+                        >
+                          Sign Up
+                        </button>
+                      </StarBorder>
                     </div>
                   </div>
                 </div>
@@ -844,6 +890,23 @@ const App: React.FC = () => {
               <SafeWalkRequestForm onClose={() => setShowSafeWalk(false)} />
             </div>
           )}
+
+          {showVoiceAssistant && (
+            <VoiceAssistant onClose={() => setShowVoiceAssistant(false)} />
+          )}
+
+          {/* Floating Voice Assistant Button */}
+          <div className="fixed bottom-6 right-6 z-30">
+            <StarBorder color="#0038FF">
+              <button
+                onClick={toggleVoiceAssistant}
+                className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all"
+                title="Voice Assistant"
+              >
+                <Volume2 className="w-6 h-6" />
+              </button>
+            </StarBorder>
+          </div>
         </>
       )}
     </div>

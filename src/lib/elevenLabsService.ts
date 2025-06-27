@@ -1,47 +1,56 @@
 import { toast } from 'react-hot-toast';
 
-// The URL for your deployed Firebase Cloud Function
-// This will be set in your .env file and accessed via import.meta.env
-const FIREBASE_FUNCTIONS_URL = import.meta.env.VITE_FIREBASE_FUNCTIONS_URL;
+// ElevenLabs API key
+const ELEVENLABS_API_KEY = 'sk_8f7afe9792da4eaa3aa03d77343c3b58d44d35a0e6f42541';
 
 interface SpeakOptions {
   voiceId?: string;
   volume?: number; // 0.0 to 1.0
+  model?: string;
+  stability?: number; // 0.0 to 1.0
+  similarityBoost?: number; // 0.0 to 1.0
 }
 
 export const elevenLabsService = {
   /**
-   * Converts text to speech using the ElevenLabs API via a Firebase Cloud Function.
+   * Converts text to speech using the ElevenLabs API.
    * Plays the generated audio.
    * @param text The text to convert to speech.
    * @param options Optional parameters like voiceId and volume.
    * @returns A Promise that resolves with the HTMLAudioElement if successful, or null if an error occurs.
    */
   async speakText(text: string, options?: SpeakOptions): Promise<HTMLAudioElement | null> {
-    if (!FIREBASE_FUNCTIONS_URL || FIREBASE_FUNCTIONS_URL === 'YOUR_DEPLOYED_FUNCTION_URL_HERE') {
-      console.warn('ElevenLabs function URL is not configured. Speech functionality disabled.');
-      toast.error('Speech functionality is not configured yet. Please follow the setup instructions in README-ELEVENLABS-SETUP.md');
+    if (!text.trim()) {
+      console.warn('Empty text provided to speakText');
       return null;
     }
 
     try {
-      // Assuming your function is named 'generateSpeech' and is accessible at /generateSpeech
-      const response = await fetch(`${FIREBASE_FUNCTIONS_URL}/generateSpeech`, {
+      // Default voice ID - Rachel (female voice)
+      const voiceId = options?.voiceId || '21m00Tcm4TlvDq8ikWAM';
+      
+      // Make direct request to ElevenLabs API
+      const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'xi-api-key': ELEVENLABS_API_KEY,
+          'Accept': 'audio/mpeg'
         },
         body: JSON.stringify({
           text: text,
-          voiceId: options?.voiceId,
-        }),
+          model_id: options?.model || 'eleven_monolingual_v1',
+          voice_settings: {
+            stability: options?.stability || 0.5,
+            similarity_boost: options?.similarityBoost || 0.75
+          }
+        })
       });
 
       if (!response.ok) {
         const errorText = await response.text();
-        toast.error(`Failed to generate speech: ${errorText}`);
         console.error('Speech generation failed:', errorText);
-        return null;
+        throw new Error(errorText);
       }
 
       const audioBlob = await response.blob();
@@ -62,16 +71,58 @@ export const elevenLabsService = {
       return audio;
 
     } catch (error) {
-      toast.error('Error connecting to speech service.');
       console.error('Error in speakText:', error);
+      toast.error('Error generating speech. Please try again later.');
       return null;
     }
   },
 
-  // You can add other methods here, e.g., for getting available voices
-  // This would also go through a Firebase Function to hide the API key
+  /**
+   * Gets available voices from ElevenLabs API
+   * @returns A Promise that resolves with the list of voices
+   */
   async getVoices(): Promise<any[]> {
-    console.warn("getVoices not implemented. It should also go through a backend function to keep API key secure.");
-    return [];
+    try {
+      const response = await fetch('https://api.elevenlabs.io/v1/voices', {
+        method: 'GET',
+        headers: {
+          'xi-api-key': ELEVENLABS_API_KEY
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to get voices: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      return data.voices || [];
+    } catch (error) {
+      console.error('Error getting voices:', error);
+      return [];
+    }
+  },
+
+  /**
+   * Gets the remaining character count for the API key
+   * @returns A Promise that resolves with the character count info
+   */
+  async getCharacterCount(): Promise<any> {
+    try {
+      const response = await fetch('https://api.elevenlabs.io/v1/user/subscription', {
+        method: 'GET',
+        headers: {
+          'xi-api-key': ELEVENLABS_API_KEY
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to get character count: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Error getting character count:', error);
+      return null;
+    }
   }
 };

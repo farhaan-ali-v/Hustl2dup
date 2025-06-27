@@ -1,15 +1,15 @@
-import { cn } from "@/lib/utils"
-import { ElementType, ComponentPropsWithoutRef } from "react"
+import { cn } from "@/lib/utils";
+import { ElementType, ComponentPropsWithoutRef } from "react";
 
 interface StarBorderProps<T extends ElementType> {
-  as?: T
-  color?: string
-  speed?: string
-  className?: string
-  children: React.ReactNode
+  as?: T;
+  color?: string;
+  speed?: string;
+  className?: string;
+  children: React.ReactNode;
 }
 
-export function StarBorder<T extends ElementType = "button">({
+export function StarBorder<T extends ElementType = "div">({
   as,
   className,
   color,
@@ -17,8 +17,8 @@ export function StarBorder<T extends ElementType = "button">({
   children,
   ...props
 }: StarBorderProps<T> & Omit<ComponentPropsWithoutRef<T>, keyof StarBorderProps<T>>) {
-  const Component = as || "button"
-  const defaultColor = color || "hsl(var(--foreground))"
+  const Component = as || "div";
+  const defaultColor = color || "hsl(var(--foreground))";
 
   return (
     <Component 
@@ -56,5 +56,5 @@ export function StarBorder<T extends ElementType = "button">({
         {children}
       </div>
     </Component>
-  )
+  );
 }
