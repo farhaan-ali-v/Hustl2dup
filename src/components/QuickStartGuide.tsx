@@ -52,6 +52,55 @@ const CATEGORIES = [
   }
 ];
 
+// Audio manager singleton for QuickStartGuide
+const quickStartAudioManager = {
+  isPlaying: false,
+  currentAudio: null as HTMLAudioElement | null,
+  
+  async playAudio(audioUrl: string): Promise<void> {
+    // If already playing, stop current audio
+    if (this.isPlaying && this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio = null;
+    }
+    
+    this.isPlaying = true;
+    
+    return new Promise((resolve, reject) => {
+      const audio = new Audio(audioUrl);
+      this.currentAudio = audio;
+      
+      audio.onended = () => {
+        URL.revokeObjectURL(audioUrl);
+        this.isPlaying = false;
+        this.currentAudio = null;
+        resolve();
+      };
+      
+      audio.onerror = (e) => {
+        URL.revokeObjectURL(audioUrl);
+        this.isPlaying = false;
+        this.currentAudio = null;
+        reject(e);
+      };
+      
+      audio.play().catch(err => {
+        this.isPlaying = false;
+        this.currentAudio = null;
+        reject(err);
+      });
+    });
+  },
+  
+  stopAudio() {
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio = null;
+    }
+    this.isPlaying = false;
+  }
+};
+
 const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
   onClose,
   onCreateTask,
@@ -71,6 +120,11 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
     
     // Play welcome message
     playWelcomeMessage();
+    
+    return () => {
+      // Clean up any playing audio when component unmounts
+      quickStartAudioManager.stopAudio();
+    };
   }, []);
   
   const playWelcomeMessage = async () => {
@@ -79,7 +133,9 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
     setIsPlayingAudio(true);
     try {
       await elevenLabsService.speakText(
-        "Welcome to Hustl! I'm your campus task assistant. I'll help you get started with creating and finding tasks around campus."
+        "Welcome to Hustl! I'm your campus task assistant. I'll help you get started with creating and finding tasks around campus.",
+        undefined,
+        quickStartAudioManager
       );
     } catch (error) {
       console.warn("Couldn't play welcome message:", error);
@@ -115,6 +171,11 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
   
   const toggleAudio = () => {
     setIsAudioEnabled(!isAudioEnabled);
+    
+    // If turning off audio, stop any playing audio
+    if (isAudioEnabled) {
+      quickStartAudioManager.stopAudio();
+    }
   };
 
   return (

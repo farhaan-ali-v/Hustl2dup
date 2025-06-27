@@ -5,6 +5,14 @@ interface ElevenLabsError {
   };
 }
 
+// Audio manager interface for the singleton pattern
+interface AudioManager {
+  isPlaying: boolean;
+  currentAudio: HTMLAudioElement | null;
+  playAudio(audioUrl: string): Promise<void>;
+  stopAudio(): void;
+}
+
 class ElevenLabsService {
   private apiKey: string;
   private baseUrl = 'https://api.elevenlabs.io/v1';
@@ -38,7 +46,11 @@ class ElevenLabsService {
     throw new Error('Voice features are currently unavailable. Please try again later.');
   }
 
-  async speakText(text: string, voiceId: string = 'EXAVITQu4vr4xnSDxMaL'): Promise<void> {
+  async speakText(
+    text: string, 
+    voiceId: string = 'EXAVITQu4vr4xnSDxMaL', 
+    audioManager?: AudioManager
+  ): Promise<void> {
     if (!this.isServiceAvailable()) {
       console.warn('ElevenLabs API key not configured. Voice features disabled.');
       return; // Silently fail if no API key
@@ -69,6 +81,13 @@ class ElevenLabsService {
 
       const audioBlob = await response.blob();
       const audioUrl = URL.createObjectURL(audioBlob);
+      
+      // If an audio manager is provided, use it to play the audio
+      if (audioManager) {
+        return audioManager.playAudio(audioUrl);
+      }
+      
+      // Otherwise, use the default audio playback
       const audio = new Audio(audioUrl);
       
       return new Promise((resolve, reject) => {

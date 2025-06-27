@@ -10,6 +10,55 @@ interface VoiceAssistantProps {
   userLocation?: Location | null;
 }
 
+// Create a singleton pattern to ensure only one instance can play audio
+const audioManager = {
+  isPlaying: false,
+  currentAudio: null as HTMLAudioElement | null,
+  
+  async playAudio(audioUrl: string): Promise<void> {
+    // If already playing, stop current audio
+    if (this.isPlaying && this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio = null;
+    }
+    
+    this.isPlaying = true;
+    
+    return new Promise((resolve, reject) => {
+      const audio = new Audio(audioUrl);
+      this.currentAudio = audio;
+      
+      audio.onended = () => {
+        URL.revokeObjectURL(audioUrl);
+        this.isPlaying = false;
+        this.currentAudio = null;
+        resolve();
+      };
+      
+      audio.onerror = (e) => {
+        URL.revokeObjectURL(audioUrl);
+        this.isPlaying = false;
+        this.currentAudio = null;
+        reject(e);
+      };
+      
+      audio.play().catch(err => {
+        this.isPlaying = false;
+        this.currentAudio = null;
+        reject(err);
+      });
+    });
+  },
+  
+  stopAudio() {
+    if (this.currentAudio) {
+      this.currentAudio.pause();
+      this.currentAudio = null;
+    }
+    this.isPlaying = false;
+  }
+};
+
 export default function VoiceAssistant({ onClose, userLocation }: VoiceAssistantProps) {
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -68,6 +117,8 @@ export default function VoiceAssistant({ onClose, userLocation }: VoiceAssistant
       if (recognitionRef.current) {
         recognitionRef.current.stop();
       }
+      // Stop any playing audio when component unmounts
+      audioManager.stopAudio();
     };
   }, []);
 
@@ -159,7 +210,8 @@ export default function VoiceAssistant({ onClose, userLocation }: VoiceAssistant
     setVoiceError(null);
     
     try {
-      await elevenLabsService.speakText(text);
+      // Use the modified ElevenLabs service that uses the audio manager
+      await elevenLabsService.speakText(text, undefined, audioManager);
     } catch (error: any) {
       console.warn('Voice synthesis failed:', error.message);
       setVoiceError(error.message);
@@ -173,6 +225,11 @@ export default function VoiceAssistant({ onClose, userLocation }: VoiceAssistant
   const toggleAudio = () => {
     setIsAudioEnabled(!isAudioEnabled);
     setVoiceError(null);
+    
+    // If turning off audio, stop any playing audio
+    if (isAudioEnabled) {
+      audioManager.stopAudio();
+    }
   };
 
   return (
