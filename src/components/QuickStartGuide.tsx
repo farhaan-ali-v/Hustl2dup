@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Package, Star, DollarSign, Shield, X, Coffee, Book, Dog, Car, GraduationCap, Users, Printer, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, Package, Star, DollarSign, Shield, X, Coffee, Book, Dog, Car, GraduationCap, Users, Printer, ChevronLeft, ChevronRight, Zap, Award, Trophy } from 'lucide-react';
 
 interface QuickStartGuideProps {
   onClose: () => void;
@@ -91,10 +91,15 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl w-full max-w-3xl p-6 mx-4 shadow-xl">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
+      <div className="bg-white rounded-2xl w-full max-w-3xl p-6 mx-4 shadow-2xl">
         <div className="flex justify-between items-center mb-6">
           <div className="text-center flex-1">
+            <div className="flex items-center justify-center mb-2">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center shadow-lg">
+                <Trophy className="w-6 h-6 text-white" />
+              </div>
+            </div>
             <h2 className="text-2xl font-bold text-[#0F2557]">Welcome to Hustl</h2>
             <p className="text-gray-600 mt-1">
               Your campus task marketplace - get help or earn money helping others
@@ -113,9 +118,9 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full bg-gray-200 rounded-full h-2 mb-6">
+        <div className="w-full bg-gray-200 rounded-full h-2 mb-6 overflow-hidden">
           <div 
-            className="bg-[#0F2557] h-2 rounded-full transition-all duration-300"
+            className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] h-2 rounded-full transition-all duration-300"
             style={{ width: `${(currentStep / 3) * 100}%` }}
           ></div>
         </div>
@@ -132,7 +137,7 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
                     markGuideAsShown();
                     onCreateTask?.();
                   }}
-                  className="bg-[#FF5A1F] text-white p-5 rounded-2xl hover:bg-[#E63A0B] transition-colors group shadow-md"
+                  className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white p-5 rounded-2xl hover:opacity-90 transition-colors group shadow-lg"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <Package className="w-7 h-7" />
@@ -149,7 +154,7 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
                     markGuideAsShown();
                     onBrowseTasks?.();
                   }}
-                  className="bg-[#0038FF] text-white p-5 rounded-2xl hover:bg-[#0021A5] transition-colors group shadow-md"
+                  className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white p-5 rounded-2xl hover:opacity-90 transition-colors group shadow-lg"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <DollarSign className="w-7 h-7" />
@@ -166,14 +171,17 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
 
           {currentStep === 2 && (
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold text-center">Popular Task Categories</h3>
+              <h3 className="text-xl font-semibold text-center flex items-center justify-center">
+                <Zap className="w-6 h-6 text-[#FF5A1F] mr-2" />
+                Popular Task Categories
+              </h3>
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {CATEGORIES.map((category) => (
                   <button
                     key={category.name}
                     onClick={() => handleCategoryClick(category.template)}
-                    className="bg-white px-3 py-2 rounded-xl text-sm hover:bg-[#0F2557] hover:text-white transition-colors flex items-center justify-center group shadow-sm border border-gray-200"
+                    className="bg-white px-3 py-3 rounded-xl text-sm hover:bg-gradient-to-r hover:from-[#0038FF] hover:to-[#0021A5] hover:text-white transition-all duration-300 flex items-center justify-center group shadow-sm border border-gray-200"
                   >
                     <span className="group-hover:text-white text-[#0F2557]">
                       {category.icon}
@@ -187,29 +195,38 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
 
           {currentStep === 3 && (
             <div className="space-y-6">
-              <h3 className="text-xl font-semibold text-center">Key Features</h3>
+              <h3 className="text-xl font-semibold text-center flex items-center justify-center">
+                <Award className="w-6 h-6 text-[#FF5A1F] mr-2" />
+                Key Features
+              </h3>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-blue-50 p-4 rounded-xl shadow-sm border border-blue-100">
-                  <Shield className="w-6 h-6 text-[#0F2557] mb-2" />
-                  <h3 className="font-semibold mb-1 text-sm text-[#0F2557]">Safe & Secure</h3>
-                  <p className="text-gray-600 text-sm">
+                <div className="premium-card p-4 hover:shadow-lg transition-all duration-300">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center mb-4 text-white shadow-md mx-auto">
+                    <Shield className="w-6 h-6" />
+                  </div>
+                  <h3 className="font-semibold mb-1 text-sm text-center">Safe & Secure</h3>
+                  <p className="text-gray-600 text-sm text-center">
                     Verified UF students only with built-in safety features.
                   </p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-xl shadow-sm border border-blue-100">
-                  <Star className="w-6 h-6 text-[#0F2557] mb-2" />
-                  <h3 className="font-semibold mb-1 text-sm text-[#0F2557]">Earn Points</h3>
-                  <p className="text-gray-600 text-sm">
+                <div className="premium-card p-4 hover:shadow-lg transition-all duration-300">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center mb-4 text-white shadow-md mx-auto">
+                    <Star className="w-6 h-6" />
+                  </div>
+                  <h3 className="font-semibold mb-1 text-sm text-center">Earn Points</h3>
+                  <p className="text-gray-600 text-sm text-center">
                     Complete tasks to earn points and unlock rewards.
                   </p>
                 </div>
 
-                <div className="bg-blue-50 p-4 rounded-xl shadow-sm border border-blue-100">
-                  <DollarSign className="w-6 h-6 text-[#0F2557] mb-2" />
-                  <h3 className="font-semibold mb-1 text-sm text-[#0F2557]">Flexible Earnings</h3>
-                  <p className="text-gray-600 text-sm">
+                <div className="premium-card p-4 hover:shadow-lg transition-all duration-300">
+                  <div className="w-12 h-12 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center mb-4 text-white shadow-md mx-auto">
+                    <DollarSign className="w-6 h-6" />
+                  </div>
+                  <h3 className="font-semibold mb-1 text-sm text-center">Flexible Earnings</h3>
+                  <p className="text-gray-600 text-sm text-center">
                     Set your schedule and earn between classes.
                   </p>
                 </div>
@@ -242,7 +259,7 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
           {currentStep < 3 ? (
             <button
               onClick={nextStep}
-              className="bg-[#0038FF] text-white px-5 py-2 rounded-xl hover:bg-[#0021A5] transition-colors flex items-center text-sm shadow-sm font-semibold"
+              className="bg-[#0038FF] text-white px-5 py-2 rounded-xl hover:bg-[#0021A5] transition-colors flex items-center text-sm shadow-md font-semibold"
             >
               Next
               <ArrowRight className="w-4 h-4 ml-2" />
@@ -250,7 +267,7 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
           ) : (
             <button
               onClick={handleGetStarted}
-              className="bg-[#FF5A1F] text-white px-5 py-2 rounded-xl hover:bg-[#E63A0B] transition-colors flex items-center text-sm shadow-sm font-semibold"
+              className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-5 py-2 rounded-xl hover:opacity-90 transition-colors flex items-center text-sm shadow-md font-semibold"
             >
               Get Started
               <ArrowRight className="w-4 h-4 ml-2" />

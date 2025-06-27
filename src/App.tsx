@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Zap, ArrowRight, BookOpen, Coffee, Package, Star, Search, Filter, Bell, Bike, Dumbbell, Users, Utensils, Dog, Car, PartyPopper, GraduationCap, MessageSquare, Shield, HelpCircle, Info, Settings, Menu, ChevronDown, Wallet, ListTodo, Home, User, LogIn, UserPlus, Mail } from 'lucide-react';
+import { Zap, ArrowRight, BookOpen, Coffee, Package, Star, Search, Filter, Bell, Bike, Dumbbell, Users, Utensils, Dog, Car, PartyPopper, GraduationCap, MessageSquare, Shield, HelpCircle, Info, Settings, Menu, ChevronDown, Wallet, ListTodo, Home, User, LogIn, UserPlus, Mail, Award, Trophy } from 'lucide-react';
 import { Toaster, toast } from 'react-hot-toast';
 import { useGeolocation } from './hooks/useGeolocation';
 import { Location } from './lib/locationService';
@@ -290,25 +290,30 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gray-50">
       <Toaster position="top-center" />
       {isInitializing ? (
         <div className="min-h-screen flex items-center justify-center bg-white">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0F2557]"></div>
+          <div className="flex flex-col items-center">
+            <div className="w-16 h-16 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center mb-4 shadow-lg text-white">
+              <Zap className="w-8 h-8" />
+            </div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0F2557]"></div>
+          </div>
         </div>
       ) : (
         <>
-          <nav className="bg-white border-b border-gray-200">
+          <nav className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-40">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-between h-16">
                 {/* Left side - Logo and main navigation */}
                 <div className="flex items-center space-x-8">
-                  <div className="flex items-center space-x-3 cursor-pointer" onClick={() => setCurrentView('templates')}>
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl flex items-center justify-center">
+                  <div className="flex items-center space-x-3 cursor-pointer group" onClick={() => setCurrentView('templates')}>
+                    <div className="w-10 h-10 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300">
                       <span className="text-white font-bold text-lg">H</span>
                     </div>
                     <div>
-                      <span className="text-xl font-bold text-gray-900">Hustl</span>
+                      <span className="text-xl font-bold text-gray-900 group-hover:text-[#0038FF] transition-colors">Hustl</span>
                       <div className="text-xs text-gray-500">Campus Gigs</div>
                     </div>
                   </div>
@@ -318,7 +323,7 @@ const App: React.FC = () => {
                       onClick={() => setCurrentView('templates')}
                       className={`flex items-center space-x-1 px-4 py-2 rounded-lg font-semibold transition-colors ${
                         currentView === 'templates' 
-                          ? 'bg-[#0038FF] text-white' 
+                          ? 'bg-[#0038FF] text-white shadow-md' 
                           : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                       }`}
                     >
@@ -330,7 +335,7 @@ const App: React.FC = () => {
                       onClick={() => handleProtectedAction(() => setCurrentView('marketplace'), 'browse tasks')}
                       className={`flex items-center space-x-1 px-4 py-2 rounded-lg font-semibold transition-colors ${
                         currentView === 'marketplace' 
-                          ? 'bg-[#0038FF] text-white' 
+                          ? 'bg-[#0038FF] text-white shadow-md' 
                           : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                       }`}
                     >
@@ -349,13 +354,13 @@ const App: React.FC = () => {
                       </button>
 
                       {showNavDropdown && (
-                        <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-lg py-2 z-50 border border-gray-200">
+                        <div className="absolute top-full left-0 mt-2 w-56 bg-white rounded-lg shadow-xl py-2 z-50 border border-gray-200">
                           <button
                             onClick={() => {
                               setShowLearnMore(true);
                               setShowNavDropdown(false);
                             }}
-                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center"
+                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-[#0038FF] flex items-center transition-colors"
                           >
                             <Info className="w-4 h-4 mr-2" />
                             Learn More
@@ -367,7 +372,7 @@ const App: React.FC = () => {
                                 setShowNavDropdown(false);
                               }, 'view safety features');
                             }}
-                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center"
+                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-[#0038FF] flex items-center transition-colors"
                           >
                             <Shield className="w-4 h-4 mr-2" />
                             Safety
@@ -379,7 +384,7 @@ const App: React.FC = () => {
                                 setShowNavDropdown(false);
                               }, 'access help');
                             }}
-                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center"
+                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-[#0038FF] flex items-center transition-colors"
                           >
                             <HelpCircle className="w-4 h-4 mr-2" />
                             Help
@@ -391,7 +396,7 @@ const App: React.FC = () => {
                                 setShowNavDropdown(false);
                               }, 'access your wallet');
                             }}
-                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center"
+                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-[#0038FF] flex items-center transition-colors"
                           >
                             <Wallet className="w-4 h-4 mr-2" />
                             Wallet
@@ -403,7 +408,7 @@ const App: React.FC = () => {
                                 setShowNavDropdown(false);
                               }, 'view messages');
                             }}
-                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center"
+                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-[#0038FF] flex items-center transition-colors"
                           >
                             <MessageSquare className="w-4 h-4 mr-2" />
                             Messages
@@ -415,14 +420,14 @@ const App: React.FC = () => {
                                 setShowNavDropdown(false);
                               }, 'request SafeWalk');
                             }}
-                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center"
+                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-[#0038FF] flex items-center transition-colors"
                           >
                             <Shield className="w-4 h-4 mr-2" />
                             Request SafeWalk
                           </button>
                           <a
                             href={`mailto:hustlapp@outlook.com?subject=Support Request`}
-                            className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 flex items-center"
+                            className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-[#0038FF] flex items-center transition-colors"
                           >
                             <Mail className="w-4 h-4 mr-2" />
                             Email Support
@@ -444,7 +449,7 @@ const App: React.FC = () => {
                         >
                           <Bell className="w-5 h-5" />
                           {unreadNotifications > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-[#FA4616] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                            <span className="absolute -top-1 -right-1 bg-[#FA4616] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full shadow-md">
                               {unreadNotifications}
                             </span>
                           )}
@@ -455,7 +460,7 @@ const App: React.FC = () => {
                         onClick={() => setCurrentView('profile')}
                         className={`flex items-center space-x-1 px-4 py-2 rounded-lg font-semibold transition-colors ${
                           currentView === 'profile' 
-                            ? 'bg-[#0038FF] text-white' 
+                            ? 'bg-[#0038FF] text-white shadow-md' 
                             : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                         }`}
                       >
@@ -473,8 +478,9 @@ const App: React.FC = () => {
 
                       <button 
                         onClick={() => setShowCreateTask(true)}
-                        className="bg-[#FF5A1F] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#E63A0B] transition duration-200 shadow-sm"
+                        className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition duration-200 shadow-md flex items-center"
                       >
+                        <Zap className="w-4 h-4 mr-2" />
                         Post Task
                       </button>
                     </>
@@ -482,7 +488,7 @@ const App: React.FC = () => {
                     <>
                       <button
                         onClick={handleSignIn}
-                        className="flex items-center space-x-1 px-4 py-2 rounded-lg bg-[#0038FF] text-white hover:bg-[#0021A5] transition-colors font-semibold shadow-sm"
+                        className="flex items-center space-x-1 px-4 py-2 rounded-lg bg-[#0038FF] text-white hover:bg-[#0021A5] transition-colors font-semibold shadow-md"
                       >
                         <LogIn className="w-4 h-4" />
                         <span>Sign In</span>
@@ -490,9 +496,9 @@ const App: React.FC = () => {
                       
                       <button
                         onClick={handleSignUp}
-                        className="bg-[#FF5A1F] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#E63A0B] transition duration-200 shadow-sm flex items-center space-x-1"
+                        className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-4 py-2 rounded-lg font-semibold hover:opacity-90 transition duration-200 shadow-md flex items-center"
                       >
-                        <UserPlus className="w-4 h-4" />
+                        <UserPlus className="w-4 h-4 mr-2" />
                         <span>Sign Up</span>
                       </button>
                     </>
@@ -518,9 +524,9 @@ const App: React.FC = () => {
                 <TaskMarketplace userLocation={userLocation} />
               ) : (
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-                  <div className="bg-white p-8 rounded-lg shadow-md max-w-md mx-auto">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <LogIn className="w-8 h-8 text-[#0038FF]" />
+                  <div className="bg-white p-8 rounded-xl shadow-lg max-w-md mx-auto border border-gray-200">
+                    <div className="w-16 h-16 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center mx-auto mb-4 text-white shadow-lg">
+                      <LogIn className="w-8 h-8" />
                     </div>
                     <h2 className="text-2xl font-bold mb-4">Sign In Required</h2>
                     <p className="text-gray-600 mb-6">
@@ -529,13 +535,13 @@ const App: React.FC = () => {
                     <div className="flex space-x-4 justify-center">
                       <button
                         onClick={handleSignIn}
-                        className="bg-[#0038FF] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#0021A5] transition-colors"
+                        className="bg-[#0038FF] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#0021A5] transition-colors shadow-md"
                       >
                         Sign In
                       </button>
                       <button
                         onClick={handleSignUp}
-                        className="bg-[#FF5A1F] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#E63A0B] transition-colors"
+                        className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-6 py-2 rounded-lg font-semibold hover:opacity-90 transition-colors shadow-md"
                       >
                         Sign Up
                       </button>
@@ -556,13 +562,15 @@ const App: React.FC = () => {
                   backgroundPosition: 'center'
                 }}
               >
-                <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-black/50"></div>
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
                   <div className="text-center max-w-3xl mx-auto mb-16">
                     <div className="flex items-center justify-center mb-6">
-                      <Zap className="w-12 h-12 text-[#FA4616]" />
+                      <div className="w-16 h-16 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center shadow-lg">
+                        <Zap className="w-8 h-8 text-white" />
+                      </div>
                     </div>
-                    <h1 className="text-5xl font-bold mb-6">How Hustl Works</h1>
+                    <h1 className="text-5xl font-bold mb-6 leading-tight">How Hustl Works</h1>
                     <p className="text-xl text-gray-200">
                       Get help or earn money helping others - it's that simple!
                     </p>
@@ -570,7 +578,7 @@ const App: React.FC = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                     <div className="flex flex-col items-center text-center">
-                      <div className="w-24 h-24 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center mb-6">
+                      <div className="w-24 h-24 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center mb-6 shadow-lg">
                         <Package className="w-12 h-12 text-[#FA4616]" />
                       </div>
                       <h3 className="text-2xl font-bold mb-4">Post Your Task</h3>
@@ -580,7 +588,7 @@ const App: React.FC = () => {
                     </div>
 
                     <div className="flex flex-col items-center text-center">
-                      <div className="w-24 h-24 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center mb-6">
+                      <div className="w-24 h-24 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center mb-6 shadow-lg">
                         <Users className="w-12 h-12 text-[#FA4616]" />
                       </div>
                       <h3 className="text-2xl font-bold mb-4">Get Matched</h3>
@@ -590,7 +598,7 @@ const App: React.FC = () => {
                     </div>
 
                     <div className="flex flex-col items-center text-center">
-                      <div className="w-24 h-24 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center mb-6">
+                      <div className="w-24 h-24 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center mb-6 shadow-lg">
                         <Star className="w-12 h-12 text-[#FA4616]" />
                       </div>
                       <h3 className="text-2xl font-bold mb-4">Complete & Pay</h3>
@@ -603,14 +611,14 @@ const App: React.FC = () => {
                   <div className="flex justify-center space-x-4 mt-12">
                     <button 
                       onClick={() => setCurrentView('templates')}
-                      className="bg-[#FA4616] text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-[#E63A0B] transition duration-200 flex items-center"
+                      className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-8 py-4 rounded-lg font-semibold text-lg hover:opacity-90 transition duration-200 flex items-center shadow-lg"
                     >
                       Get Started
                       <ArrowRight className="ml-2 w-6 h-6" />
                     </button>
                     <button 
                       onClick={() => setShowLearnMore(true)}
-                      className="bg-white text-[#0F2557] px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition duration-200"
+                      className="bg-white text-[#0F2557] px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition duration-200 shadow-md"
                     >
                       Learn More
                     </button>
@@ -620,26 +628,32 @@ const App: React.FC = () => {
 
               <section className="py-20 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <h2 className="text-3xl font-bold text-center mb-12">What You Can Do</h2>
+                  <h2 className="text-3xl font-bold text-center mb-12 flex items-center justify-center">
+                    <Trophy className="w-8 h-8 text-[#FA4616] mr-2" />
+                    What You Can Do
+                  </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {CATEGORY_GROUPS.map((group, index) => (
-                      <div key={index} className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
-                        <div className="h-48 overflow-hidden">
+                      <div key={index} className="premium-card transform hover:scale-[1.02] transition-all duration-300">
+                        <div className="h-48 overflow-hidden relative">
                           <img
                             src={group.image}
                             alt={group.name}
                             className="w-full h-full object-cover"
                           />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                          <div className="absolute bottom-4 left-4">
+                            <h3 className="text-xl font-bold text-white">{group.name}</h3>
+                          </div>
                         </div>
                         <div className="p-6">
-                          <div className="flex flex-col items-center">
+                          <div className="flex flex-col items-center mb-4">
                             {group.icon}
-                            <h3 className="text-xl font-bold mb-4">{group.name}</h3>
                           </div>
                           <ul className="space-y-2">
                             {group.categories.map((category, idx) => (
                               <li key={idx} className="flex items-center">
-                                <ArrowRight className="w-4 h-4 text-[#FA4616] mr-2" />
+                                <ArrowRight className="w-4 h-4 text-[#FA4616] mr-2 flex-shrink-0" />
                                 <span>{category}</span>
                               </li>
                             ))}
@@ -654,7 +668,9 @@ const App: React.FC = () => {
               <section className="py-20 bg-gray-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                   <div className="flex items-center justify-center mb-6">
-                    <Star className="w-8 h-8 text-[#FA4616]" />
+                    <div className="w-16 h-16 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center shadow-lg">
+                      <Star className="w-8 h-8 text-white" />
+                    </div>
                   </div>
                   <h2 className="text-3xl font-bold mb-4">Trusted by UF Students</h2>
                   <p className="text-xl text-gray-600 mb-8">Join thousands of Gators helping Gators every day</p>
@@ -686,9 +702,9 @@ const App: React.FC = () => {
                 <ChatList userId={user.uid} currentUser={user} />
               ) : (
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-                  <div className="bg-white p-8 rounded-lg shadow-md max-w-md mx-auto">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <MessageSquare className="w-8 h-8 text-[#0038FF]" />
+                  <div className="bg-white p-8 rounded-xl shadow-lg max-w-md mx-auto border border-gray-200">
+                    <div className="w-16 h-16 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center mx-auto mb-4 text-white shadow-lg">
+                      <MessageSquare className="w-8 h-8" />
                     </div>
                     <h2 className="text-2xl font-bold mb-4">Sign In Required</h2>
                     <p className="text-gray-600 mb-6">
@@ -697,13 +713,13 @@ const App: React.FC = () => {
                     <div className="flex space-x-4 justify-center">
                       <button
                         onClick={handleSignIn}
-                        className="bg-[#0038FF] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#0021A5] transition-colors"
+                        className="bg-[#0038FF] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#0021A5] transition-colors shadow-md"
                       >
                         Sign In
                       </button>
                       <button
                         onClick={handleSignUp}
-                        className="bg-[#FF5A1F] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#E63A0B] transition-colors"
+                        className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-6 py-2 rounded-lg font-semibold hover:opacity-90 transition-colors shadow-md"
                       >
                         Sign Up
                       </button>
@@ -720,9 +736,9 @@ const App: React.FC = () => {
                 <UserProfile />
               ) : (
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
-                  <div className="bg-white p-8 rounded-lg shadow-md max-w-md mx-auto">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <User className="w-8 h-8 text-[#0038FF]" />
+                  <div className="bg-white p-8 rounded-xl shadow-lg max-w-md mx-auto border border-gray-200">
+                    <div className="w-16 h-16 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center mx-auto mb-4 text-white shadow-lg">
+                      <User className="w-8 h-8" />
                     </div>
                     <h2 className="text-2xl font-bold mb-4">Sign In Required</h2>
                     <p className="text-gray-600 mb-6">
@@ -731,13 +747,13 @@ const App: React.FC = () => {
                     <div className="flex space-x-4 justify-center">
                       <button
                         onClick={handleSignIn}
-                        className="bg-[#0038FF] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#0021A5] transition-colors"
+                        className="bg-[#0038FF] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#0021A5] transition-colors shadow-md"
                       >
                         Sign In
                       </button>
                       <button
                         onClick={handleSignUp}
-                        className="bg-[#FF5A1F] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#E63A0B] transition-colors"
+                        className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-6 py-2 rounded-lg font-semibold hover:opacity-90 transition-colors shadow-md"
                       >
                         Sign Up
                       </button>
@@ -813,8 +829,8 @@ const App: React.FC = () => {
           )}
 
           {showAuth && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
+              <div className="bg-white rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-2xl">
                 <Auth 
                   initialMode={authMode}
                   onClose={() => setShowAuth(false)}
@@ -824,7 +840,7 @@ const App: React.FC = () => {
           )}
 
           {showSafeWalk && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
               <SafeWalkRequestForm onClose={() => setShowSafeWalk(false)} />
             </div>
           )}
@@ -836,10 +852,22 @@ const App: React.FC = () => {
 
 function Testimonial({ quote, author, role }: any) {
   return (
-    <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-      <p className="text-gray-600 italic mb-4">"{quote}"</p>
-      <p className="font-semibold">{author}</p>
-      <p className="text-sm text-gray-500">{role}</p>
+    <div className="premium-card p-6 hover:shadow-xl transition-all duration-300">
+      <div className="flex items-center mb-4">
+        <div className="w-10 h-10 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center text-white shadow-md">
+          <User className="w-5 h-5" />
+        </div>
+        <div className="ml-3">
+          <p className="font-semibold">{author}</p>
+          <p className="text-sm text-gray-500">{role}</p>
+        </div>
+      </div>
+      <div className="flex mb-3">
+        {[...Array(5)].map((_, i) => (
+          <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+        ))}
+      </div>
+      <p className="text-gray-600 italic">"{quote}"</p>
     </div>
   );
 }

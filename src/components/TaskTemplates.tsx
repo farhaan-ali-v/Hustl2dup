@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, MapPin, Clock, DollarSign, ChevronDown, ChevronUp, Coffee, Book, Dog, Car, Utensils, Printer, GraduationCap, Dumbbell, ArrowRight, CheckCircle, Users, Shield, HelpCircle, Star, ChevronLeft, ChevronRight, MessageSquare } from 'lucide-react';
+import { Search, Filter, MapPin, Clock, DollarSign, ChevronDown, ChevronUp, Coffee, Book, Dog, Car, Utensils, Printer, GraduationCap, Dumbbell, ArrowRight, CheckCircle, Users, Shield, HelpCircle, Star, ChevronLeft, ChevronRight, MessageSquare, Zap, Award, Trophy } from 'lucide-react';
 import { taskTemplateService } from '../lib/database';
 import { Location } from '../lib/locationService';
 import toast from 'react-hot-toast';
@@ -225,7 +225,7 @@ const BUILT_IN_TEMPLATES = [
     category: 'transportation',
     estimated_time: '10-20 minutes',
     price: 8.00,
-    image: "https://media.istockphoto.com/id/1644775768/photo/an-unrecognizable-businessman-driving-his-car.jpg?s=612x612&w=0&k=20&c=pWqIRpn3nH2AItVB4J5e5F1_AB4Fv6PtoyYUEMMpLaw=",
+    image: "https://images.pexels.com/photos/13861/IMG_3496bfree.jpg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
     locations: [
       {
         name: "Reitz Union",
@@ -287,7 +287,7 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
     {
       title: "Need help studying?",
       subtitle: "Find study partners or get materials delivered",
-      image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80",
+      image: "https://images.pexels.com/photos/5428003/pexels-photo-5428003.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
       tag: "Study Buddy",
       tagIcon: <Book className="w-5 h-5 text-[#0038FF]" />,
       tagTime: "60 min",
@@ -296,7 +296,7 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
     {
       title: "Running late for class?",
       subtitle: "Get coffee delivered right to you",
-      image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80",
+      image: "https://images.pexels.com/photos/324028/pexels-photo-324028.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
       tag: "Coffee Run",
       tagIcon: <Coffee className="w-5 h-5 text-[#0038FF]" />,
       tagTime: "15 min",
@@ -305,7 +305,7 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
     {
       title: "Out of time for errands?",
       subtitle: "Get help with campus tasks and deliveries",
-      image: "https://unsplash.com/photos/woman-in-white-t-shirt-standing-in-front-of-woman-in-yellow-t-shirt-cNlBqwaGhEk",
+      image: "https://images.pexels.com/photos/1438072/pexels-photo-1438072.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
       tag: "Campus Errands",
       tagIcon: <Utensils className="w-5 h-5 text-[#0038FF]" />,
       tagTime: "20 min",
@@ -314,7 +314,7 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
     {
       title: "Forgot to print again?",
       subtitle: "Get your documents delivered to you",
-      image: "https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=800&q=80",
+      image: "https://images.pexels.com/photos/1925536/pexels-photo-1925536.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
       tag: "Print Delivery",
       tagIcon: <Printer className="w-5 h-5 text-[#0038FF]" />,
       tagTime: "15 min",
@@ -323,7 +323,7 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
     {
       title: "Grab tasks between classes",
       subtitle: "Earn money helping fellow students",
-      image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80",
+      image: "https://images.pexels.com/photos/3184338/pexels-photo-3184338.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
       tag: "Quick Tasks",
       tagIcon: <DollarSign className="w-5 h-5 text-[#0038FF]" />,
       tagTime: "30 min",
@@ -508,25 +508,35 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
   return (
     <div>
       {/* Hero Section with Dynamic Content */}
-      <div className="bg-[#002B7F] text-white rounded-xl overflow-hidden mb-10">
+      <div className="bg-gradient-to-r from-[#002B7F] to-[#0038FF] text-white rounded-xl overflow-hidden mb-10 shadow-xl">
         <div className="flex flex-col md:flex-row">
-          <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">{currentHero.title}</h2>
-            <p className="text-xl mb-6">{currentHero.subtitle}</p>
-            <p className="text-gray-200 mb-8">Campus errands, covered. Coffee runs, printing, pet care — Hustl connects Gators in minutes.</p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button 
-                onClick={() => window.dispatchEvent(new CustomEvent('create-task'))}
-                className="bg-[#FF5A1F] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#E63A0B] transition duration-200 flex items-center justify-center"
-              >
-                Post a Task <ArrowRight className="ml-2 w-5 h-5" />
-              </button>
-              <button 
-                onClick={() => window.dispatchEvent(new CustomEvent('view-tasks'))}
-                className="bg-white text-[#002B7F] px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-200"
-              >
-                Browse Tasks
-              </button>
+          <div className="md:w-1/2 p-8 md:p-12 flex flex-col justify-center relative z-10">
+            {/* Animated decorative elements */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10 pointer-events-none">
+              <div className="absolute top-10 left-10 w-20 h-20 rounded-full bg-white float-animation" style={{animationDelay: '0s'}}></div>
+              <div className="absolute bottom-20 right-10 w-16 h-16 rounded-full bg-white float-animation" style={{animationDelay: '0.5s'}}></div>
+              <div className="absolute top-1/2 left-1/4 w-12 h-12 rounded-full bg-white float-animation" style={{animationDelay: '1s'}}></div>
+            </div>
+            
+            <div className="relative">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">{currentHero.title}</h2>
+              <p className="text-xl mb-6">{currentHero.subtitle}</p>
+              <p className="text-blue-100 mb-8 max-w-md">Campus errands, covered. Coffee runs, printing, pet care — Hustl connects Gators in minutes.</p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button 
+                  onClick={() => window.dispatchEvent(new CustomEvent('create-task'))}
+                  className="secondary-button flex items-center justify-center group"
+                >
+                  Post a Task 
+                  <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+                </button>
+                <button 
+                  onClick={() => window.dispatchEvent(new CustomEvent('view-tasks'))}
+                  className="bg-white text-[#002B7F] px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition duration-200 shadow-md"
+                >
+                  Browse Tasks
+                </button>
+              </div>
             </div>
           </div>
           <div className="md:w-1/2 relative">
@@ -536,23 +546,43 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
               className="w-full h-full object-cover transition-opacity duration-500"
               style={{ minHeight: "300px" }}
             />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#002B7F]/50 to-transparent pointer-events-none"></div>
             <div className="absolute bottom-6 right-6">
-              <div className="bg-[#0038FF] text-white rounded-lg p-3 shadow-lg">
+              <div className="glass-card p-3 shadow-lg">
                 <div className="flex items-center">
                   {currentHero.tagIcon}
                   <div className="ml-2">
-                    <p className="font-medium">{currentHero.tag}</p>
-                    <p className="text-sm">{currentHero.tagTime} • {currentHero.tagPrice}</p>
+                    <p className="font-bold text-white">{currentHero.tag}</p>
+                    <p className="text-sm text-white/90">{currentHero.tagTime} • {currentHero.tagPrice}</p>
                   </div>
                 </div>
               </div>
+            </div>
+            
+            {/* Animated indicators */}
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+              {heroContent.map((_, index) => (
+                <button 
+                  key={index}
+                  onClick={() => setCurrentHeroIndex(index)}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    index === currentHeroIndex 
+                      ? 'bg-white w-6' 
+                      : 'bg-white/50 hover:bg-white/80'
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
             </div>
           </div>
         </div>
       </div>
 
       <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-2">Popular Tasks</h2>
+        <h2 className="text-2xl font-bold mb-2 flex items-center">
+          <Zap className="w-6 h-6 text-[#FF5A1F] mr-2" />
+          Popular Tasks
+        </h2>
         <p className="text-gray-600">
           Choose from our most popular task templates or create your own
         </p>
@@ -565,15 +595,15 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
             placeholder="Search tasks..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0038FF]"
+            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0038FF] shadow-sm"
           />
-          <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
         </div>
 
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0038FF]"
+          className="px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0038FF] shadow-sm"
         >
           {categories.map(category => (
             <option key={category.id} value={category.id}>
@@ -588,7 +618,7 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0038FF]"></div>
         </div>
       ) : filteredTemplates.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 rounded-lg">
+        <div className="text-center py-12 bg-white rounded-xl shadow-md">
           <Filter className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900">No templates found</h3>
           <p className="mt-2 text-sm text-gray-500">
@@ -600,32 +630,39 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
           {filteredTemplates.map((template) => (
             <div
               key={template.id}
-              className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-200 overflow-hidden"
+              className="premium-card transform hover:scale-[1.02] transition-all duration-300"
             >
               {template.image && (
-                <div className="h-40 overflow-hidden">
+                <div className="h-40 overflow-hidden relative">
                   <img
                     src={template.image}
                     alt={template.title}
                     className="w-full h-full object-cover"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+                  <div className="absolute bottom-3 left-3">
+                    <span className={`${template.price === 0 ? 'badge-premium' : 'badge-secondary'}`}>
+                      {template.price === 0 ? 'FREE' : `$${template.price.toFixed(2)}`}
+                    </span>
+                  </div>
                 </div>
               )}
               <div className="p-5">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-xl font-bold">{template.title}</h3>
-                  <span className="text-xl font-bold text-[#FA4616]">
-                    {template.price === 0 ? 'FREE' : `$${template.price.toFixed(2)}`}
-                  </span>
+                  <div className="flex items-center">
+                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                    <span className="text-sm font-medium ml-1">4.9</span>
+                  </div>
                 </div>
                 <p className="text-gray-600 mb-4">{template.description}</p>
                 <div className="flex items-center space-x-4 mb-4">
                   <div className="flex items-center text-sm text-gray-500">
-                    <Clock className="w-4 h-4 mr-1" />
+                    <Clock className="w-4 h-4 mr-1 text-[#0038FF]" />
                     <span>{template.estimated_time}</span>
                   </div>
                   <div className="flex items-center text-sm text-gray-500">
-                    <MapPin className="w-4 h-4 mr-1" />
+                    <MapPin className="w-4 h-4 mr-1 text-[#0038FF]" />
                     <span>{template.locations?.length || 0} locations</span>
                   </div>
                 </div>
@@ -634,7 +671,7 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
                   <div className="mb-4">
                     <button
                       onClick={() => toggleLocationExpand(template.id)}
-                      className="flex items-center justify-between w-full text-sm text-[#0038FF] hover:text-[#0021A5] transition-colors"
+                      className="flex items-center justify-between w-full text-sm text-[#0038FF] hover:text-[#0021A5] transition-colors font-medium"
                     >
                       <span>Popular Locations</span>
                       {expandedLocations[template.id] ? (
@@ -649,7 +686,7 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
                         {template.locations.slice(0, 3).map((location, index) => (
                           <div
                             key={index}
-                            className="flex items-center justify-between p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                            className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors cursor-pointer border border-gray-100"
                             onClick={() => handleSelectLocation(template, location)}
                           >
                             <div className="flex items-center">
@@ -657,7 +694,7 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
                                 <img
                                   src={location.logo}
                                   alt={location.name}
-                                  className="w-8 h-8 rounded-full object-cover mr-2"
+                                  className="w-8 h-8 rounded-full object-cover mr-2 border border-gray-200"
                                 />
                               ) : (
                                 <MapPin className="w-5 h-5 text-gray-400 mr-2" />
@@ -672,7 +709,7 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
                         ))}
                         {template.locations.length > 3 && (
                           <button
-                            className="text-sm text-[#0038FF] hover:text-[#0021A5] transition-colors w-full text-center py-2 border-t border-gray-100"
+                            className="text-sm text-[#0038FF] hover:text-[#0021A5] transition-colors w-full text-center py-2 border-t border-gray-100 font-medium"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleViewAllLocations(template);
@@ -688,8 +725,9 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
 
                 <button
                   onClick={() => handleSelectTemplate(template)}
-                  className="w-full bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-2 rounded-xl font-semibold hover:opacity-90 transition duration-200 shadow-md"
+                  className="premium-button w-full flex items-center justify-center"
                 >
+                  <Zap className="w-5 h-5 mr-2" />
                   Select Task
                 </button>
               </div>
@@ -699,39 +737,76 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
       )}
 
       {/* Need Something Else Section */}
-      <div className="bg-[#002B7F] text-white rounded-xl p-8 text-center my-12">
-        <h2 className="text-2xl font-bold mb-2">Need Something Else?</h2>
-        <p className="mb-6">Create a custom task for anything you need help with on campus.</p>
-        <button 
-          onClick={() => window.dispatchEvent(new CustomEvent('create-task'))}
-          className="bg-[#FF5A1F] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#E63A0B] transition duration-200 inline-block"
-        >
-          Create Custom Task
-        </button>
+      <div className="bg-gradient-to-r from-[#002B7F] to-[#0038FF] text-white rounded-xl p-8 text-center my-12 shadow-xl relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full transform -translate-x-1/4 -translate-y-1/4"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-white opacity-5 rounded-full transform translate-x-1/4 translate-y-1/4"></div>
+        </div>
+        
+        <div className="relative z-10">
+          <div className="inline-block mb-4 p-2 rounded-full bg-white/10 backdrop-blur-sm">
+            <Trophy className="w-8 h-8 text-[#FF5A1F]" />
+          </div>
+          <h2 className="text-2xl md:text-3xl font-bold mb-2">Need Something Else?</h2>
+          <p className="mb-6 max-w-md mx-auto">Create a custom task for anything you need help with on campus.</p>
+          <button 
+            onClick={() => window.dispatchEvent(new CustomEvent('create-task'))}
+            className="secondary-button inline-flex items-center group"
+          >
+            <Zap className="w-5 h-5 mr-2" />
+            Create Custom Task
+            <ArrowRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1" />
+          </button>
+        </div>
       </div>
 
       {/* How Hustl Works Section */}
       <div className="my-16">
-        <h2 className="text-3xl font-bold text-center mb-4">How Hustl Works</h2>
+        <h2 className="text-3xl font-bold text-center mb-4 flex items-center justify-center">
+          <Award className="w-8 h-8 text-[#FF5A1F] mr-2" />
+          How Hustl Works
+        </h2>
         <p className="text-center text-gray-600 mb-12">Getting help is as easy as 1-2-3</p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="text-center">
-            <div className="w-16 h-16 bg-[#FF5A1F] rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">1</div>
-            <h3 className="text-xl font-bold mb-2">Post Your Task</h3>
-            <p className="text-gray-600">Describe what you need help with and set your budget</p>
+          <div className="premium-card p-6 text-center relative">
+            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
+              <div className="w-10 h-10 rounded-full bg-[#FF5A1F] text-white flex items-center justify-center text-xl font-bold shadow-lg">1</div>
+            </div>
+            <div className="pt-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#FF5A1F] to-[#E63A0B] rounded-full flex items-center justify-center text-white mx-auto mb-4 shadow-lg">
+                <Package className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Post Your Task</h3>
+              <p className="text-gray-600">Describe what you need help with and set your budget</p>
+            </div>
           </div>
           
-          <div className="text-center">
-            <div className="w-16 h-16 bg-[#002B7F] rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">2</div>
-            <h3 className="text-xl font-bold mb-2">Get Matched</h3>
-            <p className="text-gray-600">Ready students will see your task and offer to help</p>
+          <div className="premium-card p-6 text-center relative">
+            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
+              <div className="w-10 h-10 rounded-full bg-[#002B7F] text-white flex items-center justify-center text-xl font-bold shadow-lg">2</div>
+            </div>
+            <div className="pt-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center text-white mx-auto mb-4 shadow-lg">
+                <Users className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Get Matched</h3>
+              <p className="text-gray-600">Ready students will see your task and offer to help</p>
+            </div>
           </div>
           
-          <div className="text-center">
-            <div className="w-16 h-16 bg-[#FF5A1F] rounded-full flex items-center justify-center text-white text-2xl font-bold mx-auto mb-4">3</div>
-            <h3 className="text-xl font-bold mb-2">Task Complete</h3>
-            <p className="text-gray-600">Chat with your helper, track progress, and rate your experience</p>
+          <div className="premium-card p-6 text-center relative">
+            <div className="absolute -top-5 left-1/2 transform -translate-x-1/2">
+              <div className="w-10 h-10 rounded-full bg-[#FF5A1F] text-white flex items-center justify-center text-xl font-bold shadow-lg">3</div>
+            </div>
+            <div className="pt-6">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#FF5A1F] to-[#E63A0B] rounded-full flex items-center justify-center text-white mx-auto mb-4 shadow-lg">
+                <Star className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Task Complete</h3>
+              <p className="text-gray-600">Chat with your helper, track progress, and rate your experience</p>
+            </div>
           </div>
         </div>
       </div>
@@ -739,80 +814,104 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
       {/* Testimonials Section */}
       <div className="my-16 grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
-          <h2 className="text-3xl font-bold mb-4">What Students Are Saying</h2>
+          <h2 className="text-3xl font-bold mb-4 flex items-center">
+            <Star className="w-7 h-7 text-[#FF5A1F] mr-2" />
+            What Students Are Saying
+          </h2>
           <p className="text-gray-600 mb-6">
             Join thousands of UF students already using Hustl to connect, help each other, and build a stronger campus community.
           </p>
           
           <div className="space-y-4">
             <div className="flex items-center">
-              <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
-              <span>Student ID verification required</span>
+              <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-green-500" />
+              </div>
+              <span className="ml-3 font-medium">Student ID verification required</span>
             </div>
             <div className="flex items-center">
-              <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
-              <span>Real-time chat and tracking</span>
+              <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-blue-500" />
+              </div>
+              <span className="ml-3 font-medium">Real-time chat and tracking</span>
             </div>
             <div className="flex items-center">
-              <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
-              <span>Community ratings and reviews</span>
+              <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-purple-500" />
+              </div>
+              <span className="ml-3 font-medium">Community ratings and reviews</span>
             </div>
             <div className="flex items-center">
-              <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
-              <span>24/7 support team</span>
+              <div className="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-yellow-500" />
+              </div>
+              <span className="ml-3 font-medium">24/7 support team</span>
             </div>
           </div>
         </div>
         
-        <div className="bg-[#002B7F] text-white rounded-xl p-6">
-          <div className="flex items-center mb-4">
-            <div className="w-12 h-12 bg-blue-300 rounded-full flex items-center justify-center text-[#002B7F] text-xl font-bold mr-4">
-              {currentTestimonial.name.charAt(0)}
+        <div className="bg-gradient-to-r from-[#002B7F] to-[#0038FF] text-white rounded-xl p-6 shadow-xl relative overflow-hidden">
+          {/* Animated background elements */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full transform -translate-x-1/4 -translate-y-1/4"></div>
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-white opacity-5 rounded-full transform translate-x-1/4 translate-y-1/4"></div>
+          </div>
+          
+          <div className="relative z-10">
+            <div className="flex items-center mb-4">
+              <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white text-xl font-bold mr-4 shadow-lg">
+                {currentTestimonial.name.charAt(0)}
+              </div>
+              <div>
+                <h3 className="font-bold">{currentTestimonial.name}</h3>
+                <p className="text-sm text-blue-100">{currentTestimonial.major} • {currentTestimonial.year}</p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-bold">{currentTestimonial.name}</h3>
-              <p className="text-sm">{currentTestimonial.major} • {currentTestimonial.year}</p>
-            </div>
-          </div>
-          
-          <div className="flex mb-2">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-5 h-5 text-yellow-400" fill="#FBBF24" />
-            ))}
-          </div>
-          
-          <p className="text-sm mb-2">Used for: {currentTestimonial.service}</p>
-          
-          <div className="border-l-4 border-[#FF5A1F] pl-4 italic">
-            "{currentTestimonial.quote}"
-          </div>
-          
-          <div className="flex justify-between items-center mt-6">
-            <div className="flex space-x-1">
-              {testimonials.map((_, index) => (
-                <button 
-                  key={index}
-                  onClick={() => setCurrentTestimonialIndex(index)}
-                  className={`w-2 h-2 rounded-full ${
-                    index === currentTestimonialIndex ? 'bg-white' : 'bg-blue-300'
-                  }`}
-                />
+            
+            <div className="flex mb-2">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-5 h-5 text-yellow-400" fill="#FBBF24" />
               ))}
             </div>
             
-            <div className="flex space-x-2">
-              <button 
-                onClick={prevTestimonial}
-                className="w-8 h-8 rounded-full bg-blue-800 flex items-center justify-center hover:bg-blue-700 transition-colors"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button 
-                onClick={nextTestimonial}
-                className="w-8 h-8 rounded-full bg-blue-800 flex items-center justify-center hover:bg-blue-700 transition-colors"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
+            <div className="inline-block px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm text-sm mb-3">
+              {currentTestimonial.service}
+            </div>
+            
+            <div className="border-l-4 border-[#FF5A1F] pl-4 italic bg-white/5 p-3 rounded-r-lg">
+              "{currentTestimonial.quote}"
+            </div>
+            
+            <div className="flex justify-between items-center mt-6">
+              <div className="flex space-x-1">
+                {testimonials.map((_, index) => (
+                  <button 
+                    key={index}
+                    onClick={() => setCurrentTestimonialIndex(index)}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                      index === currentTestimonialIndex ? 'bg-white w-6' : 'bg-white/50 hover:bg-white/80'
+                    }`}
+                    aria-label={`Go to testimonial ${index + 1}`}
+                  />
+                ))}
+              </div>
+              
+              <div className="flex space-x-2">
+                <button 
+                  onClick={prevTestimonial}
+                  className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                  aria-label="Previous testimonial"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button 
+                  onClick={nextTestimonial}
+                  className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors"
+                  aria-label="Next testimonial"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -820,28 +919,31 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
 
       {/* Features Section */}
       <div className="my-16">
-        <h2 className="text-3xl font-bold text-center mb-12">Why Choose Hustl</h2>
+        <h2 className="text-3xl font-bold text-center mb-12 flex items-center justify-center">
+          <Trophy className="w-8 h-8 text-[#0038FF] mr-2" />
+          Why Choose Hustl
+        </h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 text-center">
-            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Shield className="w-8 h-8 text-[#002B7F]" />
+          <div className="premium-card p-6 text-center hover:scale-105 transition-all duration-300">
+            <div className="w-16 h-16 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg text-white">
+              <Shield className="w-8 h-8" />
             </div>
             <h3 className="text-xl font-bold mb-2">Safe & Secure</h3>
             <p className="text-gray-600">Verified UF students only with built-in safety features and secure payments.</p>
           </div>
           
-          <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 text-center">
-            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Users className="w-8 h-8 text-[#002B7F]" />
+          <div className="premium-card p-6 text-center hover:scale-105 transition-all duration-300">
+            <div className="w-16 h-16 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg text-white">
+              <Users className="w-8 h-8" />
             </div>
             <h3 className="text-xl font-bold mb-2">Campus Community</h3>
             <p className="text-gray-600">Connect with fellow Gators in a trusted, campus-focused environment.</p>
           </div>
           
-          <div className="bg-white p-6 rounded-xl shadow-md border border-gray-100 text-center">
-            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <DollarSign className="w-8 h-8 text-[#002B7F]" />
+          <div className="premium-card p-6 text-center hover:scale-105 transition-all duration-300">
+            <div className="w-16 h-16 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg text-white">
+              <DollarSign className="w-8 h-8" />
             </div>
             <h3 className="text-xl font-bold mb-2">Flexible Earnings</h3>
             <p className="text-gray-600">Set your own schedule and earn money helping other students.</p>
@@ -850,20 +952,25 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
       </div>
 
       {/* CTA Section */}
-      <div className="bg-gray-50 rounded-xl p-8 text-center my-12">
+      <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-8 text-center my-12 shadow-md border border-blue-100">
+        <div className="inline-block mb-4 p-2 rounded-full bg-blue-100">
+          <Zap className="w-8 h-8 text-[#0038FF]" />
+        </div>
         <h2 className="text-2xl font-bold mb-4">Ready to Get Started?</h2>
-        <p className="text-gray-600 mb-6">Join thousands of UF students already using Hustl to connect and help each other.</p>
+        <p className="text-gray-600 mb-6 max-w-xl mx-auto">Join thousands of UF students already using Hustl to connect and help each other.</p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <button 
             onClick={() => window.dispatchEvent(new CustomEvent('create-task'))}
-            className="bg-[#FF5A1F] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#E63A0B] transition duration-200"
+            className="secondary-button flex items-center justify-center"
           >
+            <Zap className="w-5 h-5 mr-2" />
             Post a Task
           </button>
           <button 
             onClick={() => window.dispatchEvent(new CustomEvent('view-tasks'))}
-            className="bg-[#002B7F] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#001B8C] transition duration-200"
+            className="premium-button flex items-center justify-center"
           >
+            <Search className="w-5 h-5 mr-2" />
             Browse Tasks
           </button>
         </div>
@@ -872,6 +979,9 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
       {/* Help Section */}
       <div className="border-t pt-12 mt-12">
         <div className="text-center mb-8">
+          <div className="inline-block mb-4 p-2 rounded-full bg-blue-100">
+            <HelpCircle className="w-8 h-8 text-[#0038FF]" />
+          </div>
           <h3 className="text-xl font-bold mb-2">Need Help?</h3>
           <p className="text-gray-600">Our support team is available 24/7</p>
         </div>
@@ -879,7 +989,7 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
         <div className="flex flex-col md:flex-row justify-center gap-4">
           <button 
             onClick={() => window.dispatchEvent(new CustomEvent('open-faq'))}
-            className="flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
           >
             <HelpCircle className="w-5 h-5 mr-2 text-[#002B7F]" />
             <span>FAQs</span>
@@ -887,7 +997,7 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
           
           <button 
             onClick={() => window.dispatchEvent(new CustomEvent('open-support'))}
-            className="flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
           >
             <MessageSquare className="w-5 h-5 mr-2 text-[#002B7F]" />
             <span>Contact Support</span>
@@ -895,7 +1005,7 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
           
           <button 
             onClick={() => window.dispatchEvent(new CustomEvent('open-safety'))}
-            className="flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex items-center justify-center px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shadow-sm"
           >
             <Shield className="w-5 h-5 mr-2 text-[#002B7F]" />
             <span>Safety Center</span>

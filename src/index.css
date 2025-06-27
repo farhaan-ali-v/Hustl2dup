@@ -4,17 +4,22 @@
 
 @layer base {
   body {
-    @apply antialiased text-gray-900 bg-white;
+    @apply antialiased text-gray-900 bg-gray-50;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold tracking-tight;
   }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-[#002B7F] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#001F5C] transition duration-200 shadow-sm;
+    @apply bg-[#002B7F] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#001F5C] transition duration-200 shadow-md;
   }
   
   .btn-secondary {
-    @apply bg-[#FF4D23] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#E63A0B] transition duration-200 shadow-sm;
+    @apply bg-[#FF4D23] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#E63A0B] transition duration-200 shadow-md;
   }
 
   .nav-link {
@@ -22,15 +27,15 @@
   }
 
   .nav-button {
-    @apply bg-[#002B7F] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#001F5C] transition duration-200 shadow-sm;
+    @apply bg-[#002B7F] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#001F5C] transition duration-200 shadow-md;
   }
   
   .task-card {
-    @apply bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1;
+    @apply bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1 transform;
   }
   
   .task-card-header {
-    @apply h-2 bg-[#002B7F];
+    @apply h-2 bg-gradient-to-r from-[#002B7F] to-[#0038FF];
   }
   
   .task-card-body {
@@ -38,7 +43,48 @@
   }
   
   .task-icon-container {
-    @apply w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center mb-4;
+    @apply w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center mb-4 shadow-md;
+  }
+  
+  .premium-card {
+    @apply bg-white rounded-xl border border-gray-200 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden;
+    background: linear-gradient(to bottom, #ffffff, #f9faff);
+  }
+  
+  .premium-header {
+    @apply bg-gradient-to-r from-[#002B7F] to-[#0038FF] text-white p-4 font-bold;
+  }
+  
+  .premium-button {
+    @apply bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-3 rounded-xl font-bold hover:opacity-90 transition-all duration-200 shadow-lg transform hover:translate-y-[-2px];
+  }
+  
+  .secondary-button {
+    @apply bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-4 py-3 rounded-xl font-bold hover:opacity-90 transition-all duration-200 shadow-lg transform hover:translate-y-[-2px];
+  }
+  
+  .badge-premium {
+    @apply px-3 py-1 text-xs font-bold rounded-full;
+    background: linear-gradient(90deg, #0038FF, #0021A5);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 33, 165, 0.2);
+  }
+  
+  .badge-secondary {
+    @apply px-3 py-1 text-xs font-bold rounded-full;
+    background: linear-gradient(90deg, #FF5A1F, #E63A0B);
+    color: white;
+    box-shadow: 0 2px 4px rgba(230, 58, 11, 0.2);
+  }
+  
+  .glass-card {
+    @apply rounded-xl backdrop-blur-sm border border-white/20;
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .level-badge {
+    @apply px-2 py-1 text-xs font-bold rounded-full shadow-sm;
+    background: linear-gradient(90deg, #0038FF, #FF5A1F);
   }
 }
 
@@ -76,8 +122,39 @@
   }
 }
 
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shine {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
 .pulse-effect {
   animation: pulse-glow 2s infinite;
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+.shine-effect {
+  background: linear-gradient(90deg, 
+    rgba(255,255,255,0) 0%, 
+    rgba(255,255,255,0.8) 50%, 
+    rgba(255,255,255,0) 100%);
+  background-size: 200% 100%;
+  animation: shine 3s infinite;
 }
 
 .hover-scale {
@@ -141,4 +218,90 @@
 .btn-3d:active {
   transform: translateY(0);
   box-shadow: 0 4px 6px -1px rgba(0, 33, 165, 0.2), 0 2px 4px -1px rgba(0, 33, 165, 0.1);
+}
+
+/* Gamification elements */
+.xp-progress {
+  @apply h-2 rounded-full overflow-hidden bg-gray-200;
+}
+
+.xp-progress-bar {
+  @apply h-full;
+  background: linear-gradient(90deg, #0038FF, #FF5A1F);
+  transition: width 0.5s ease-in-out;
+}
+
+.achievement-card {
+  @apply rounded-xl p-4 border transition-all duration-300;
+  background: linear-gradient(135deg, #ffffff 0%, #f5f7ff 100%);
+}
+
+.achievement-card.unlocked {
+  @apply border-green-200 bg-green-50;
+}
+
+.achievement-card.locked {
+  @apply border-gray-200 bg-gray-50 opacity-70;
+}
+
+.achievement-icon {
+  @apply w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-2;
+}
+
+.achievement-icon.unlocked {
+  @apply bg-green-100;
+  animation: pulse-glow 2s infinite;
+}
+
+.achievement-icon.locked {
+  @apply bg-gray-100;
+}
+
+/* Premium UI elements */
+.premium-gradient-text {
+  @apply font-bold;
+  background: linear-gradient(90deg, #0038FF, #0021A5);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.secondary-gradient-text {
+  @apply font-bold;
+  background: linear-gradient(90deg, #FF5A1F, #E63A0B);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.premium-card-header {
+  background: linear-gradient(90deg, #0038FF, #0021A5);
+  @apply text-white p-4 rounded-t-xl;
+}
+
+.premium-card-body {
+  @apply p-6 bg-white rounded-b-xl;
+}
+
+.premium-divider {
+  @apply h-0.5 w-full my-4;
+  background: linear-gradient(90deg, #0038FF, #0021A5, #FF5A1F);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a1a1a1;
 }

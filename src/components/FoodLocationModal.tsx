@@ -22,8 +22,8 @@ const FoodLocationModal: React.FC<FoodLocationModalProps> = ({
   title
 }) => {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl w-full max-w-md max-h-[80vh] shadow-xl">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+      <div className="bg-white rounded-xl w-full max-w-md max-h-[80vh] shadow-2xl">
         <div className="p-4 border-b flex justify-between items-center bg-gradient-to-r from-[#002B7F] to-[#0038FF] text-white rounded-t-xl">
           <h2 className="text-xl font-bold">{title}</h2>
           <button 
@@ -45,9 +45,9 @@ const FoodLocationModal: React.FC<FoodLocationModalProps> = ({
                 <div 
                   key={index}
                   onClick={() => onSelectLocation(location)}
-                  className="flex items-center p-4 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors border border-gray-100 m-2"
+                  className="flex items-center p-4 hover:bg-blue-50 rounded-lg cursor-pointer transition-colors border border-gray-100 m-2 hover:border-blue-200 hover:shadow-md"
                 >
-                  <div className="w-12 h-12 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden mr-4 border border-gray-200">
+                  <div className="w-12 h-12 rounded-lg bg-gray-100 flex-shrink-0 overflow-hidden mr-4 border border-gray-200 shadow-sm">
                     {location.logo ? (
                       <img 
                         src={location.logo} 
@@ -66,7 +66,9 @@ const FoodLocationModal: React.FC<FoodLocationModalProps> = ({
                     <p className="text-sm text-gray-500 truncate">{location.address}</p>
                   </div>
                   
-                  <ExternalLink className="w-5 h-5 text-[#0038FF] flex-shrink-0 ml-2" />
+                  <div className="ml-2 p-2 rounded-full bg-blue-50 text-[#0038FF] hover:bg-blue-100 transition-colors">
+                    <ExternalLink className="w-5 h-5" />
+                  </div>
                 </div>
               ))}
             </div>
