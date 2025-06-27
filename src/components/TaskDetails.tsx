@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, MapPin, Clock, DollarSign, User, MessageSquare, Shield, AlertTriangle, CheckCircle, Loader, XCircle, Navigation, CreditCard, Package, Truck, Flag, ArrowRight, Trophy, Star, Map, Info, Briefcase } from 'lucide-react';
+import { X, MapPin, Clock, DollarSign, User, MessageSquare, Shield, AlertTriangle, CheckCircle, Loader, XCircle, Navigation, CreditCard, Package, Truck, Flag, ArrowRight, Trophy, Star, Map, Info, Briefcase, Languages } from 'lucide-react';
 import toast from 'react-hot-toast';
 import TaskProgress from './TaskProgress';
 import GameChat from './GameChat';
@@ -14,6 +14,9 @@ import { auth } from '../lib/firebase';
 import { doc, runTransaction, collection } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { StarBorder } from './ui/star-border';
+import TranslatableText from './TranslatableText';
+import TranslateButton from './TranslateButton';
+import { useTranslation } from './TranslationProvider';
 
 interface TaskDetailsProps {
   task: any;
@@ -40,6 +43,9 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, onAccept }) =>
   const [showUnifiedTracker, setShowUnifiedTracker] = useState(false);
   const [statusUpdateNote, setStatusUpdateNote] = useState('');
   const [showStatusUpdateForm, setShowStatusUpdateForm] = useState(false);
+  const [translatedTitle, setTranslatedTitle] = useState<string | null>(null);
+  const [translatedDescription, setTranslatedDescription] = useState<string | null>(null);
+  const { currentLanguage } = useTranslation();
 
   useEffect(() => {
     getCurrentUser();
@@ -475,6 +481,14 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, onAccept }) =>
     );
   };
 
+  const handleTranslateTitle = (translatedText: string) => {
+    setTranslatedTitle(translatedText);
+  };
+
+  const handleTranslateDescription = (translatedText: string) => {
+    setTranslatedDescription(translatedText);
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
       {shouldShowUnifiedTracker() && showUnifiedTracker ? (
@@ -586,14 +600,36 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, onAccept }) =>
 
                 {/* Task Details */}
                 <div className="space-y-4">
-                  <div>
-                    <h3 className="text-2xl font-bold">{taskData.title}</h3>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mt-2">
-                      {taskData.category}
-                    </span>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-2xl font-bold">
+                      {translatedTitle || taskData.title}
+                    </h3>
+                    <TranslateButton 
+                      text={taskData.title}
+                      onTranslated={handleTranslateTitle}
+                      className="bg-gray-100 hover:bg-gray-200"
+                      targetLanguage={currentLanguage}
+                    />
                   </div>
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mt-2">
+                    {taskData.category}
+                  </span>
 
-                  <p className="text-gray-600">{taskData.description}</p>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-medium">Description</h4>
+                      <TranslateButton 
+                        text={taskData.description}
+                        onTranslated={handleTranslateDescription}
+                        size="sm"
+                        className="bg-white"
+                        targetLanguage={currentLanguage}
+                      />
+                    </div>
+                    <p className="text-gray-600">
+                      {translatedDescription || taskData.description}
+                    </p>
+                  </div>
 
                   {/* Real-time Location Tracker - Only show for task participants */}
                   {isTaskParticipant && taskData.status !== 'open' && taskData.location_coords && (

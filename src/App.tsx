@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Zap, ArrowRight, BookOpen, Coffee, Package, Star, Search, Filter, Bell, Bike, Dumbbell, Users, Utensils, Dog, Car, PartyPopper, GraduationCap, MessageSquare, Shield, HelpCircle, Info, Settings, Menu, ChevronDown, Wallet, ListTodo, Home, User, LogIn, UserPlus, Mail, Award, Trophy, Volume2 } from 'lucide-react';
+import { Zap, ArrowRight, BookOpen, Coffee, Package, Star, Search, Filter, Bell, Bike, Dumbbell, Users, Utensils, Dog, Car, PartyPopper, GraduationCap, MessageSquare, Shield, HelpCircle, Info, Settings, Menu, ChevronDown, Wallet, ListTodo, Home, User, LogIn, UserPlus, Mail, Award, Trophy, Volume2, Languages } from 'lucide-react';
 import { Toaster, toast } from 'react-hot-toast';
 import { useGeolocation } from './hooks/useGeolocation';
 import { Location } from './lib/locationService';
@@ -23,6 +23,8 @@ import { subscribeToAuthChanges } from './lib/auth';
 import { notificationService } from './lib/database';
 import SafeWalkRequestForm from './components/SafeWalkRequestForm';
 import VoiceAssistant from './components/VoiceAssistant';
+import LanguageSettingsModal from './components/LanguageSettingsModal';
+import { useTranslation } from './components/TranslationProvider';
 
 const CATEGORY_GROUPS = [
   {
@@ -109,11 +111,14 @@ const App: React.FC = () => {
   const [authMode, setAuthMode] = useState<'signin' | 'signup'>('signin');
   const [showSafeWalk, setShowSafeWalk] = useState(false);
   const [showVoiceAssistant, setShowVoiceAssistant] = useState(false);
+  const [showLanguageSettings, setShowLanguageSettings] = useState(false);
   
   const { location: userLocation, loading: locationLoading, error: locationError } = useGeolocation({
     timeout: 6000,
     enableHighAccuracy: true
   });
+
+  const { currentLanguage } = useTranslation();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -328,6 +333,10 @@ const App: React.FC = () => {
     setShowVoiceAssistant(!showVoiceAssistant);
   };
 
+  const handleOpenLanguageSettings = () => {
+    setShowLanguageSettings(true);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Toaster position="top-center" />
@@ -474,6 +483,16 @@ const App: React.FC = () => {
                             <Volume2 className="w-4 h-4 mr-2" />
                             Voice Assistant
                           </button>
+                          <button
+                            onClick={() => {
+                              handleOpenLanguageSettings();
+                              setShowNavDropdown(false);
+                            }}
+                            className="w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-[#0038FF] flex items-center transition-colors"
+                          >
+                            <Languages className="w-4 h-4 mr-2" />
+                            Language Settings
+                          </button>
                           <a
                             href={`mailto:hustlapp@outlook.com?subject=Support Request`}
                             className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-[#0038FF] flex items-center transition-colors"
@@ -489,6 +508,15 @@ const App: React.FC = () => {
 
                 {/* Right side - User actions */}
                 <div className="flex items-center space-x-4">
+                  {/* Language Selector Button */}
+                  <button
+                    onClick={handleOpenLanguageSettings}
+                    className="text-gray-600 hover:text-gray-900 transition-colors p-2 rounded-full hover:bg-gray-100"
+                    title="Language Settings"
+                  >
+                    <Languages className="w-5 h-5" />
+                  </button>
+                  
                   {/* Voice Assistant Button */}
                   <button
                     onClick={toggleVoiceAssistant}
@@ -910,6 +938,10 @@ const App: React.FC = () => {
             />
           )}
 
+          {showLanguageSettings && (
+            <LanguageSettingsModal onClose={() => setShowLanguageSettings(false)} />
+          )}
+
           {/* Floating Voice Assistant Button */}
           <div className="fixed bottom-6 right-6 z-30">
             <button
@@ -918,6 +950,18 @@ const App: React.FC = () => {
               title="Voice Assistant"
             >
               <Volume2 className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Floating Language Button */}
+          <div className="fixed bottom-6 left-6 z-30">
+            <button
+              onClick={handleOpenLanguageSettings}
+              className="bg-white border border-gray-200 shadow-lg p-3 rounded-full flex items-center justify-center hover:bg-gray-50 transition-colors"
+              title="Language Settings"
+            >
+              <Languages className="w-5 h-5 text-[#0038FF]" />
+              <span className="ml-2 font-medium text-sm">{currentLanguage.toUpperCase()}</span>
             </button>
           </div>
         </>

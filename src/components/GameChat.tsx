@@ -1,11 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, User, X, Paperclip, Loader, Phone, Video, MoreVertical, Heart, ThumbsUp, Smile, Star, Award, MapPin, Calendar, MessageSquare, Shield, Trophy, Zap, Info, Eye, Flag } from 'lucide-react';
+import { Send, User, X, Paperclip, Loader, Phone, Video, MoreVertical, Heart, ThumbsUp, Smile, Star, Award, MapPin, Calendar, MessageSquare, Shield, Trophy, Zap, Info, Eye, Flag, Languages } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp, updateDoc, doc, getDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '../lib/firebase';
 import UserProfileModal from './UserProfileModal';
 import ReportModal from './ReportModal';
+import TranslateButton from './TranslateButton';
+import TranslatableText from './TranslatableText';
+import { useTranslation } from './TranslationProvider';
 
 interface GameChatProps {
   taskId: string;
@@ -29,6 +32,7 @@ interface Message {
   is_delivered?: boolean;
   reactions?: { [userId: string]: string };
   message_type?: 'text' | 'image' | 'file';
+  translated_content?: string;
 }
 
 interface UserProfile {
@@ -75,10 +79,12 @@ const GameChat: React.FC<GameChatProps> = ({
   const [isTyping, setIsTyping] = useState(false);
   const [otherUserTyping, setOtherUserTyping] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  const [translatedMessages, setTranslatedMessages] = useState<{[key: string]: string}>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { currentLanguage } = useTranslation();
 
   useEffect(() => {
     if (!taskId || !currentUser?.uid || !otherUser?.id) {
@@ -482,6 +488,13 @@ const GameChat: React.FC<GameChatProps> = ({
     return '';
   };
 
+  const handleTranslateMessage = (messageId: string, translatedText: string) => {
+    setTranslatedMessages(prev => ({
+      ...prev,
+      [messageId]: translatedText
+    }));
+  };
+
   const renderReactions = (reactions: { [userId: string]: string } = {}) => {
     const reactionCounts: { [emoji: string]: number } = {};
     Object.values(reactions).forEach(emoji => {
@@ -533,46 +546,41 @@ const GameChat: React.FC<GameChatProps> = ({
       {/* Chat Header */}
       <div className="p-4 border-b bg-white shadow-lg rounded-t-2xl">
         <div className="flex items-center justify-between">
-          <div 
-            className="flex items-center cursor-pointer hover:bg-gray-50 p-2 rounded-2xl transition-colors"
-            onClick={() => showUserProfile && setShowUserProfileModal(true)}
-          >
-            <div className="relative">
-              {otherUserProfile?.avatar_url ? (
-                <img
-                  src={otherUserProfile.avatar_url}
-                  alt={otherUserProfile.full_name}
-                  className="w-12 h-12 rounded-full object-cover border-2 border-[#0038FF]"
-                />
-              ) : (
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#0038FF] to-[#FF5A1F] flex items-center justify-center border-2 border-white shadow-lg">
-                  <User className="w-6 h-6 text-white" />
-                </div>
-              )}
-              <div className="absolute -bottom-1 -right-1 bg-[#FF5A1F] text-white text-xs px-2 py-0.5 rounded-full font-bold shadow-lg">
-                L{otherUserProfile?.level || 1}
+          <div className="relative mr-3 flex-shrink-0 cursor-pointer" onClick={handleViewProfile}>
+            {otherUserProfile?.avatar_url ? (
+              <img
+                src={otherUserProfile.avatar_url}
+                alt={otherUserProfile.full_name}
+                className="w-10 h-10 rounded-full object-cover border-2 border-[#0038FF]"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0038FF] to-[#FF5A1F] flex items-center justify-center">
+                <User className="w-5 h-5 text-white" />
+              </div>
+            )}
+            <div className="absolute -bottom-1 -right-1 bg-[#FF5A1F] text-white text-xs px-1 py-0.5 rounded-full font-bold text-[10px]">
+              L{otherUserProfile?.level || 1}
+            </div>
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center space-x-2">
+              <h3 className="font-bold text-gray-900">{otherUserProfile?.full_name}</h3>
+              <div className="bg-gradient-to-r from-[#0038FF] to-[#FF5A1F] text-white text-xs px-2 py-1 rounded-full font-bold">
+                {getLevelTitle(otherUserProfile?.level || 1)}
               </div>
             </div>
-            <div className="ml-3">
-              <div className="flex items-center space-x-2">
-                <h3 className="font-bold text-gray-900">{otherUserProfile?.full_name}</h3>
-                <div className="bg-gradient-to-r from-[#0038FF] to-[#FF5A1F] text-white text-xs px-2 py-1 rounded-full font-bold">
-                  {getLevelTitle(otherUserProfile?.level || 1)}
+            <div className="flex items-center space-x-2 mt-1">
+              <div className={`w-2 h-2 rounded-full ${getConnectionStatusColor()}`}></div>
+              <p className="text-sm text-gray-500">
+                {connectionStatus === 'connected' ? 'Online' : 
+                 connectionStatus === 'connecting' ? 'Connecting...' : 'Offline'}
+              </p>
+              {otherUserProfile?.rating && (
+                <div className="flex items-center space-x-1">
+                  <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                  <span className="text-xs text-gray-600">{otherUserProfile.rating.toFixed(1)}</span>
                 </div>
-              </div>
-              <div className="flex items-center space-x-2 mt-1">
-                <div className={`w-2 h-2 rounded-full ${getConnectionStatusColor()}`}></div>
-                <p className="text-sm text-gray-500">
-                  {connectionStatus === 'connected' ? 'Online' : 
-                   connectionStatus === 'connecting' ? 'Connecting...' : 'Offline'}
-                </p>
-                {otherUserProfile?.rating && (
-                  <div className="flex items-center space-x-1">
-                    <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                    <span className="text-xs text-gray-600">{otherUserProfile.rating.toFixed(1)}</span>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           </div>
           
@@ -634,6 +642,8 @@ const GameChat: React.FC<GameChatProps> = ({
           messages.map((message, index) => {
             const isOwn = isOwnMessage(message);
             const showAvatar = index === 0 || messages[index - 1].sender_id !== message.sender_id;
+            const isTranslated = !!translatedMessages[message.id];
+            const displayContent = isTranslated ? translatedMessages[message.id] : message.content;
             
             return (
               <div
@@ -701,7 +711,17 @@ const GameChat: React.FC<GameChatProps> = ({
                       )}
                       
                       {message.content && (
-                        <p className="text-sm break-words leading-relaxed">{message.content}</p>
+                        <div className="text-sm break-words leading-relaxed">
+                          {displayContent}
+                          
+                          {/* Translation indicator */}
+                          {isTranslated && (
+                            <div className="text-xs mt-1 opacity-70 flex items-center">
+                              <Languages className="w-3 h-3 mr-1" />
+                              Translated
+                            </div>
+                          )}
+                        </div>
                       )}
                       
                       {/* Reactions */}
@@ -723,6 +743,19 @@ const GameChat: React.FC<GameChatProps> = ({
                         )}
                       </div>
                     </div>
+                    
+                    {/* Translation Button */}
+                    {message.content && currentLanguage !== 'en' && !isOwn && (
+                      <div className="absolute -top-6 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <TranslateButton 
+                          text={message.content}
+                          onTranslated={(translatedText) => handleTranslateMessage(message.id, translatedText)}
+                          size="sm"
+                          className="bg-white shadow-md text-blue-600 hover:text-blue-800"
+                          targetLanguage={currentLanguage}
+                        />
+                      </div>
+                    )}
                     
                     {/* Reaction Button */}
                     <button
