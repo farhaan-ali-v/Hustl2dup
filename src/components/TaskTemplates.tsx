@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, MapPin, Clock, DollarSign, ChevronDown, ChevronUp, Coffee, Book, Dog, Car, Utensils, Printer, GraduationCap, Dumbbell, ArrowRight, CheckCircle, Users, Shield, HelpCircle, Star, ChevronLeft, ChevronRight, MessageSquare, Zap, Award, Trophy } from 'lucide-react';
+import { Search, Filter, MapPin, Clock, DollarSign, ChevronDown, ChevronUp, Coffee, Book, Dog, Car, Utensils, Printer, GraduationCap, Dumbbell, ArrowRight, CheckCircle, Users, Shield, HelpCircle, Star, ChevronLeft, ChevronRight, MessageSquare, Zap, Award, Trophy, Package } from 'lucide-react';
 import { taskTemplateService } from '../lib/database';
 import { Location } from '../lib/locationService';
 import toast from 'react-hot-toast';
