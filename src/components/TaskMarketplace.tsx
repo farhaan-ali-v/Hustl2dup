@@ -9,6 +9,7 @@ import { taskService, profileService, notificationService, taskProgressService }
 import { auth, db } from '../lib/firebase';
 import { doc, runTransaction, collection } from 'firebase/firestore';
 import TaskStatusUpdate from './TaskStatusUpdate';
+import { StarBorder } from './ui/star-border';
 
 interface TaskMarketplaceProps {
   userLocation?: Location | null;
@@ -290,7 +291,7 @@ const TaskMarketplace: React.FC<TaskMarketplaceProps> = ({ userLocation }) => {
 
   const formatDistance = (distance: number): string => {
     if (distance < 1) {
-      return `${(distance * 1000).toFixed(0)}m`;
+      return `${(distance * 1000).toFixed(0)} m`;
     }
     return `${distance.toFixed(1)} mi`;
   };
@@ -508,13 +509,15 @@ const TaskMarketplace: React.FC<TaskMarketplaceProps> = ({ userLocation }) => {
             {getEmptyStateMessage()}
           </p>
           {activeTab === 'created' && (
-            <button 
-              onClick={() => window.dispatchEvent(new CustomEvent('create-task'))}
-              className="mt-4 px-4 py-2 bg-[#FF5A1F] text-white rounded-lg flex items-center mx-auto border border-[#E63A0B] font-semibold shadow-sm"
-            >
-              <PlusCircle className="w-5 h-5 mr-2" />
-              Create a New Task
-            </button>
+            <StarBorder color="#FF5A1F" className="mt-4 inline-block">
+              <button 
+                onClick={() => window.dispatchEvent(new CustomEvent('create-task'))}
+                className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-4 py-2 rounded-lg flex items-center mx-auto font-semibold"
+              >
+                <PlusCircle className="w-5 h-5 mr-2" />
+                Create a New Task
+              </button>
+            </StarBorder>
           )}
         </div>
       ) : (
@@ -522,7 +525,7 @@ const TaskMarketplace: React.FC<TaskMarketplaceProps> = ({ userLocation }) => {
           {filteredTasks.map((task) => (
             <div
               key={task.id}
-              className="bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border border-gray-200 overflow-hidden cursor-pointer transform hover:scale-[1.02]"
+              className="premium-card hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer transform hover:scale-[1.02]"
               onClick={() => setSelectedTask(task)}
             >
               {/* Task Header - Urgent Badge */}
@@ -572,8 +575,8 @@ const TaskMarketplace: React.FC<TaskMarketplaceProps> = ({ userLocation }) => {
                         className="w-8 h-8 rounded-full object-cover mr-2 border border-gray-200"
                       />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0038FF] to-[#0021A5] flex items-center justify-center mr-2">
-                        <User className="w-4 h-4 text-white" />
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#0038FF] to-[#0021A5] flex items-center justify-center mr-2 text-white">
+                        <User className="w-4 h-4" />
                       </div>
                     )}
                     <div>
@@ -596,54 +599,60 @@ const TaskMarketplace: React.FC<TaskMarketplaceProps> = ({ userLocation }) => {
                 {/* Action Buttons */}
                 <div className="flex space-x-2">
                   {activeTab === 'available' && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleAcceptTask(task.id);
-                      }}
-                      className="flex-1 bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-2 rounded-xl font-semibold hover:opacity-90 transition duration-200 shadow-md flex items-center justify-center transform hover:translate-y-[-2px]"
-                    >
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      Accept Task
-                    </button>
+                    <StarBorder color="#0038FF" className="flex-1">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleAcceptTask(task.id);
+                        }}
+                        className="w-full bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-2 rounded-lg font-semibold flex items-center justify-center"
+                      >
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        Accept Task
+                      </button>
+                    </StarBorder>
                   )}
                   {activeTab === 'created' && task.status === 'open' && (
                     <button
-                      className="flex-1 bg-yellow-500 text-white px-4 py-2 rounded-xl font-semibold hover:bg-yellow-600 transition duration-200 shadow-md"
+                      className="flex-1 bg-yellow-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-yellow-600 transition duration-200 shadow-md"
                     >
                       Pending Acceptance
                     </button>
                   )}
                   {activeTab === 'created' && task.status !== 'open' && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleViewLiveTracker(task.id);
-                      }}
-                      className="flex-1 bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-2 rounded-xl font-semibold hover:opacity-90 transition duration-200 shadow-md flex items-center justify-center transform hover:translate-y-[-2px]"
-                    >
-                      <MapPin className="w-4 h-4 mr-2" />
-                      Track Progress
-                    </button>
-                  )}
-                  {activeTab === 'accepted' && (
-                    <>
+                    <StarBorder color="#0038FF" className="flex-1">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleUpdateStatus(task);
+                          handleViewLiveTracker(task.id);
                         }}
-                        className="flex-1 bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-2 rounded-xl font-semibold hover:opacity-90 transition duration-200 shadow-md flex items-center justify-center transform hover:translate-y-[-2px]"
+                        className="w-full bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-2 rounded-lg font-semibold flex items-center justify-center"
                       >
-                        <ArrowRight className="w-4 h-4 mr-2" />
-                        Update Status
+                        <MapPin className="w-4 h-4 mr-2" />
+                        Track Progress
                       </button>
+                    </StarBorder>
+                  )}
+                  {activeTab === 'accepted' && (
+                    <>
+                      <StarBorder color="#0038FF" className="flex-1">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUpdateStatus(task);
+                          }}
+                          className="w-full bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-2 rounded-lg font-semibold flex items-center justify-center"
+                        >
+                          <ArrowRight className="w-4 h-4 mr-2" />
+                          Update Status
+                        </button>
+                      </StarBorder>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleContinueTask(task);
                         }}
-                        className="p-2 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition duration-200 border border-gray-300"
+                        className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition duration-200 border border-gray-300"
                       >
                         <MessageSquare className="w-5 h-5" />
                       </button>
@@ -656,7 +665,7 @@ const TaskMarketplace: React.FC<TaskMarketplaceProps> = ({ userLocation }) => {
                         e.stopPropagation();
                         handleQuickDecline(task.id);
                       }}
-                      className="p-2 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition duration-200 border border-gray-300"
+                      className="p-2 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition duration-200 border border-gray-300"
                     >
                       <XIcon className="w-5 h-5" />
                     </button>
@@ -685,7 +694,7 @@ const TaskMarketplace: React.FC<TaskMarketplaceProps> = ({ userLocation }) => {
       )}
 
       {showLiveTracker && selectedTaskForTracking && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 backdrop-blur-sm">
           <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="p-4 border-b flex justify-between items-center">
               <h2 className="text-xl font-semibold">Live Task Tracker</h2>
@@ -701,8 +710,8 @@ const TaskMarketplace: React.FC<TaskMarketplaceProps> = ({ userLocation }) => {
       )}
 
       {selectedBundle && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-lg w-full border border-gray-200">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-white rounded-lg p-6 max-w-lg w-full border border-gray-200 shadow-xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Accept Task Bundle</h3>
               <button
@@ -748,24 +757,26 @@ const TaskMarketplace: React.FC<TaskMarketplaceProps> = ({ userLocation }) => {
                 ))}
               </div>
 
-              <button
-                onClick={() => {
-                  // Accept all tasks in the bundle
-                  Promise.all(selectedBundle.tasks.map(task => handleAcceptTask(task.id)))
-                    .then(() => {
-                      setSelectedBundle(null);
-                      toast.success('Task bundle accepted successfully!');
-                    })
-                    .catch(error => {
-                      console.error('Error accepting bundle:', error);
-                      toast.error('Error accepting task bundle');
-                    });
-                }}
-                className="w-full bg-[#0038FF] text-white px-4 py-3 rounded-lg font-semibold hover:bg-[#0021A5] transition duration-200 flex items-center justify-center shadow-sm"
-              >
-                <CheckCircle className="w-5 h-5 mr-2" />
-                Accept All Tasks
-              </button>
+              <StarBorder color="#0038FF">
+                <button
+                  onClick={() => {
+                    // Accept all tasks in the bundle
+                    Promise.all(selectedBundle.tasks.map(task => handleAcceptTask(task.id)))
+                      .then(() => {
+                        setSelectedBundle(null);
+                        toast.success('Task bundle accepted successfully!');
+                      })
+                      .catch(error => {
+                        console.error('Error accepting bundle:', error);
+                        toast.error('Error accepting task bundle');
+                      });
+                  }}
+                  className="w-full bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-3 rounded-lg font-semibold flex items-center justify-center"
+                >
+                  <CheckCircle className="w-5 h-5 mr-2" />
+                  Accept All Tasks
+                </button>
+              </StarBorder>
             </div>
           </div>
         </div>

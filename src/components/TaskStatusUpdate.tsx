@@ -4,6 +4,7 @@ import { taskService, taskProgressService, notificationService } from '../lib/da
 import { auth } from '../lib/firebase';
 import toast from 'react-hot-toast';
 import GameChat from './GameChat';
+import { StarBorder } from './ui/star-border';
 
 interface TaskStatusUpdateProps {
   task: any;
@@ -177,7 +178,7 @@ const TaskStatusUpdate: React.FC<TaskStatusUpdateProps> = ({ task, onClose, onSt
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
       <div className="bg-white rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
         {showChat && currentUser && otherUser ? (
           <div className="flex flex-col h-[80vh]">
@@ -260,7 +261,7 @@ const TaskStatusUpdate: React.FC<TaskStatusUpdateProps> = ({ task, onClose, onSt
                   Next step:
                 </h3>
                 
-                <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-md hover:shadow-lg transition-all transform hover:-translate-y-1">
+                <div className="premium-card p-6 hover:shadow-xl transition-all transform hover:-translate-y-1">
                   <div className="flex items-center mb-4">
                     <div className="w-14 h-14 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center mr-4 text-white shadow-lg">
                       {nextStatusIcon}
@@ -297,20 +298,22 @@ const TaskStatusUpdate: React.FC<TaskStatusUpdateProps> = ({ task, onClose, onSt
                     </label>
                   </div>
                   
-                  <button
-                    onClick={() => handleUpdateStatus(nextStatus)}
-                    disabled={loading}
-                    className="w-full bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-4 rounded-xl font-bold hover:shadow-lg transition duration-200 flex items-center justify-center shadow-md transform hover:translate-y-[-2px]"
-                  >
-                    {loading ? (
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                    ) : (
-                      <>
-                        {nextStatusIcon}
-                        <span className="ml-2">Mark as {nextStatusLabel}</span>
-                      </>
-                    )}
-                  </button>
+                  <StarBorder color="#0038FF">
+                    <button
+                      onClick={() => handleUpdateStatus(nextStatus)}
+                      disabled={loading}
+                      className="w-full bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-4 rounded-lg font-bold flex items-center justify-center"
+                    >
+                      {loading ? (
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                      ) : (
+                        <>
+                          {nextStatusIcon}
+                          <span className="ml-2">Mark as {nextStatusLabel}</span>
+                        </>
+                      )}
+                    </button>
+                  </StarBorder>
                   
                   {/* XP indicator */}
                   <div className="mt-2 text-center text-sm text-gray-500 flex items-center justify-center">
@@ -329,25 +332,31 @@ const TaskStatusUpdate: React.FC<TaskStatusUpdateProps> = ({ task, onClose, onSt
                 
                 <div className="grid grid-cols-2 gap-3">
                   {['picked_up', 'in_progress', 'on_way', 'delivered'].map((status) => (
-                    <button
-                      key={status}
-                      onClick={() => handleUpdateStatus(status)}
-                      disabled={loading || status === task.status}
-                      className={`p-4 rounded-xl border flex flex-col items-center text-center transition-all ${
-                        status === task.status
-                          ? 'bg-gray-100 border-gray-300 cursor-not-allowed opacity-50'
-                          : 'bg-white border-gray-200 hover:border-[#0038FF] hover:bg-blue-50 hover:shadow-md transform hover:scale-[1.02]'
-                      }`}
-                    >
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center mb-2 shadow-sm">
-                        {getStatusIcon(status)}
-                      </div>
-                      <p className="font-medium">{getStatusLabel(status)}</p>
-                      <p className="text-xs text-gray-500 mt-1 flex items-center">
-                        <Star className="w-3 h-3 text-yellow-400 mr-1" fill="#FBBF24" />
-                        +{getXpForStatus(status)} XP
-                      </p>
-                    </button>
+                    <div key={status} className="relative">
+                      <StarBorder 
+                        color={status === task.status ? "#cccccc" : "#0038FF"}
+                        className={status === task.status ? "opacity-50" : ""}
+                      >
+                        <button
+                          onClick={() => handleUpdateStatus(status)}
+                          disabled={loading || status === task.status}
+                          className={`p-4 rounded-lg flex flex-col items-center text-center transition-all w-full ${
+                            status === task.status
+                              ? 'bg-gray-100 cursor-not-allowed opacity-50'
+                              : 'bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white'
+                          }`}
+                        >
+                          <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center mb-2">
+                            {getStatusIcon(status)}
+                          </div>
+                          <p className="font-medium">{getStatusLabel(status)}</p>
+                          <p className="text-xs mt-1 flex items-center">
+                            <Star className="w-3 h-3 mr-1" fill={status === task.status ? "#cccccc" : "#FBBF24"} />
+                            +{getXpForStatus(status)} XP
+                          </p>
+                        </button>
+                      </StarBorder>
+                    </div>
                   ))}
                 </div>
               </div>

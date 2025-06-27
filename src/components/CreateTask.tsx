@@ -12,6 +12,7 @@ import TaskCreationSuccess from './TaskCreationSuccess';
 import { taskService, notificationService } from '../lib/database';
 import { walletService } from '../lib/walletService';
 import { auth } from '../lib/firebase';
+import { StarBorder } from './ui/star-border';
 
 interface CreateTaskProps {
   onClose: () => void;
@@ -745,14 +746,14 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-lg">
-        <div className="p-4 border-b flex justify-between items-center bg-gradient-to-r from-[#002B7F] to-[#0038FF] text-white">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
+      <div className="bg-white rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="p-4 border-b flex justify-between items-center bg-gradient-to-r from-[#002B7F] to-[#0038FF] text-white rounded-t-xl">
           <h2 className="text-xl font-semibold flex items-center">
             <Zap className="w-5 h-5 mr-2" />
             Create New Task
           </h2>
-          <button onClick={onClose} className="text-white hover:text-gray-200 transition-colors">
+          <button onClick={onClose} className="text-white hover:text-gray-200 transition-colors p-2 rounded-full hover:bg-white/10">
             <X className="w-6 h-6" />
           </button>
         </div>
@@ -779,20 +780,26 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
                   <div 
                     key={category.id}
                     onClick={() => handleCategorySelect(category)}
-                    className="bg-white rounded-xl border border-gray-200 p-5 shadow-sm hover:shadow-md transition-all cursor-pointer"
+                    className="premium-card p-5 hover:shadow-xl transition-all cursor-pointer transform hover:scale-[1.02]"
                   >
                     <div className="flex items-center mb-3">
-                      {category.icon}
+                      <div className="w-12 h-12 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center text-white shadow-md">
+                        {category.icon}
+                      </div>
                     </div>
                     <h3 className="font-bold text-lg mb-1">{category.title}</h3>
-                    <p className="text-gray-600 text-sm mb-3">{category.description}</p>
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{category.description}</p>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-500 flex items-center">
-                        <Clock className="w-4 h-4 mr-1" />
+                        <Clock className="w-4 h-4 mr-1 text-[#0038FF]" />
                         {category.estimatedTime}
                       </span>
                       <span className="font-semibold">
-                        {category.is_free ? 'FREE' : `$${category.price.toFixed(2)}`}
+                        {category.is_free ? (
+                          <span className="badge-premium">FREE</span>
+                        ) : (
+                          <span className="badge-secondary">${category.price.toFixed(2)}</span>
+                        )}
                       </span>
                     </div>
                   </div>
@@ -801,7 +808,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
             </div>
           ) : showTaskForm ? (
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+              <div className="premium-card p-6">
                 <h3 className="text-lg font-semibold mb-4 flex items-center">
                   <Package className="w-5 h-5 text-[#FF4D23] mr-2" />
                   Task Details
@@ -865,7 +872,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+              <div className="premium-card p-6">
                 <h3 className="text-lg font-semibold mb-4 flex items-center">
                   <MapPin className="w-5 h-5 text-[#FF4D23] mr-2" />
                   Location
@@ -882,7 +889,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
                       required
                     />
 
-                    <div className="h-64 mt-2 rounded-xl overflow-hidden border border-gray-200">
+                    <div className="h-64 mt-2 rounded-xl overflow-hidden border border-gray-200 shadow-md">
                       <TaskMap
                         taskLocation={locationCoords}
                         currentLocation={currentLocation}
@@ -896,7 +903,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+              <div className="premium-card p-6">
                 <h3 className="text-lg font-semibold mb-4 flex items-center">
                   <Clock className="w-5 h-5 text-[#FF4D23] mr-2" />
                   Time & Pricing
@@ -1035,23 +1042,32 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
               </div>
 
               <div className="pt-4">
-                <button
-                  type="submit"
-                  disabled={loading || (!isFreeTask && calculating) || !locationCoords}
-                  className="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-base font-semibold text-white bg-[#FF4D23] hover:bg-[#E63A0B] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FF4D23] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                <StarBorder 
+                  color={isFreeTask ? "#0038FF" : "#FF5A1F"}
+                  className="w-full"
                 >
-                  {loading ? (
-                    <div className="flex items-center">
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                      Creating...
-                    </div>
-                  ) : (
-                    <>
-                      <Zap className="w-5 h-5 mr-2" />
-                      {isFreeTask ? 'Create Free Task' : 'Create Task & Pay'}
-                    </>
-                  )}
-                </button>
+                  <button
+                    type="submit"
+                    disabled={loading || (!isFreeTask && calculating) || !locationCoords}
+                    className={`w-full flex justify-center py-3 px-4 rounded-xl shadow-sm text-base font-semibold text-white ${
+                      isFreeTask 
+                        ? "bg-gradient-to-r from-[#0038FF] to-[#0021A5]" 
+                        : "bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B]"
+                    } hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors`}
+                  >
+                    {loading ? (
+                      <div className="flex items-center">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        Creating...
+                      </div>
+                    ) : (
+                      <>
+                        <Zap className="w-5 h-5 mr-2" />
+                        {isFreeTask ? 'Create Free Task' : 'Create Task & Pay'}
+                      </>
+                    )}
+                  </button>
+                </StarBorder>
               </div>
             </form>
           ) : null}
