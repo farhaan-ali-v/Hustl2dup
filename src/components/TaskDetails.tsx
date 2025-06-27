@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, MapPin, Clock, DollarSign, User, MessageSquare, Shield, AlertTriangle, CheckCircle, Loader, XCircle, Navigation, CreditCard, Package, Truck, Flag, ArrowRight, Trophy, Star, Map, Info } from 'lucide-react';
+import { X, MapPin, Clock, DollarSign, User, MessageSquare, Shield, AlertTriangle, CheckCircle, Loader, XCircle, Navigation, CreditCard, Package, Truck, Flag, ArrowRight, Trophy, Star, Map, Info, Briefcase } from 'lucide-react';
 import toast from 'react-hot-toast';
 import TaskProgress from './TaskProgress';
 import GameChat from './GameChat';
@@ -13,6 +13,7 @@ import { walletService } from '../lib/walletService';
 import { auth } from '../lib/firebase';
 import { doc, runTransaction, collection } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { StarBorder } from './ui/star-border';
 
 interface TaskDetailsProps {
   task: any;
@@ -456,8 +457,26 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, onAccept }) =>
     return status !== 'open' && status !== 'completed';
   };
 
+  // Format hourly rate display
+  const formatHourlyRate = () => {
+    if (!taskData.hourly_rate) return null;
+    
+    const hourlyRate = taskData.hourly_rate;
+    const estimatedHours = taskData.estimated_hours || 1;
+    
+    return (
+      <div className="flex items-center">
+        <Briefcase className="w-5 h-5 text-[#FF5A1F] mr-2" />
+        <div>
+          <span className="font-bold">${hourlyRate.toFixed(2)}/hr</span>
+          <span className="text-sm text-gray-500 ml-2">× {estimatedHours} {estimatedHours === 1 ? 'hour' : 'hours'}</span>
+        </div>
+      </div>
+    );
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
       {shouldShowUnifiedTracker() && showUnifiedTracker ? (
         <div className="bg-white rounded-2xl w-full max-w-6xl h-[90vh] flex shadow-2xl">
           <div className="w-full h-full">
@@ -609,6 +628,11 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, onAccept }) =>
                         {taskData.price === 0 ? 'Free' : `$${taskData.price}`}
                       </span>
                     </div>
+                    {taskData.hourly_rate && (
+                      <div className="flex items-center">
+                        {formatHourlyRate()}
+                      </div>
+                    )}
                     <div className="flex items-center">
                       <Shield className="w-5 h-5 text-[#FF5A1F] mr-2" />
                       <span>Verified User</span>
@@ -617,7 +641,7 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, onAccept }) =>
 
                   {/* Payment Options Modal */}
                   {showPaymentOptions && (
-                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
                       <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
                         <h3 className="text-xl font-bold mb-4">Choose Payment Method</h3>
                         <p className="text-gray-600 mb-4">
@@ -748,42 +772,48 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, onAccept }) =>
 
                   {/* Complete Task Button (for task creator) */}
                   {isTaskCreator && taskData.status !== 'open' && taskData.status !== 'completed' && (
-                    <button
-                      onClick={() => updateTaskProgress('completed', 'Task completed')}
-                      className="w-full bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-3 rounded-xl font-bold hover:opacity-90 transition duration-200 flex items-center justify-center shadow-lg"
-                    >
-                      <CheckCircle className="w-5 h-5 mr-2" />
-                      Mark Task as Completed
-                    </button>
+                    <StarBorder color="#10B981">
+                      <button
+                        onClick={() => updateTaskProgress('completed', 'Task completed')}
+                        className="w-full bg-gradient-to-r from-green-600 to-green-500 text-white px-4 py-3 rounded-lg font-bold hover:opacity-90 transition duration-200 flex items-center justify-center"
+                      >
+                        <CheckCircle className="w-5 h-5 mr-2" />
+                        Mark Task as Completed
+                      </button>
+                    </StarBorder>
                   )}
 
                   {/* Update Status Button (for task performer) */}
                   {isTaskPerformer && taskData.status !== 'open' && taskData.status !== 'completed' && !showStatusUpdateForm && (
-                    <button
-                      onClick={() => setShowStatusUpdateForm(true)}
-                      className="w-full bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-3 rounded-xl font-bold hover:opacity-90 transition duration-200 flex items-center justify-center shadow-lg"
-                    >
-                      <ArrowRight className="w-5 h-5 mr-2" />
-                      Update Task Status
-                    </button>
+                    <StarBorder color="#0038FF">
+                      <button
+                        onClick={() => setShowStatusUpdateForm(true)}
+                        className="w-full bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-3 rounded-lg font-bold hover:opacity-90 transition duration-200 flex items-center justify-center"
+                      >
+                        <ArrowRight className="w-5 h-5 mr-2" />
+                        Update Task Status
+                      </button>
+                    </StarBorder>
                   )}
 
                   {/* Review Buttons (for completed tasks) */}
                   {taskData.status === 'completed' && isTaskParticipant && (
                     <div className="space-y-3">
                       {!hasReviewed && (
-                        <button
-                          onClick={handleLeaveReview}
-                          className="w-full bg-[#0038FF] text-white px-4 py-3 rounded-xl font-bold hover:bg-[#0021A5] transition duration-200 flex items-center justify-center shadow-lg"
-                        >
-                          <Star className="w-5 h-5 mr-2" />
-                          Leave a Review
-                        </button>
+                        <StarBorder color="#0038FF">
+                          <button
+                            onClick={handleLeaveReview}
+                            className="w-full bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-3 rounded-lg font-bold hover:opacity-90 transition duration-200 flex items-center justify-center"
+                          >
+                            <Star className="w-5 h-5 mr-2" />
+                            Leave a Review
+                          </button>
+                        </StarBorder>
                       )}
                       
                       <button
                         onClick={handleViewReviews}
-                        className="w-full bg-gray-100 text-gray-700 px-4 py-3 rounded-xl font-bold hover:bg-gray-200 transition duration-200 flex items-center justify-center"
+                        className="w-full bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-bold hover:bg-gray-200 transition duration-200 flex items-center justify-center"
                       >
                         <MessageSquare className="w-5 h-5 mr-2" />
                         View Reviews
@@ -794,20 +824,22 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, onAccept }) =>
                   {/* Action Buttons */}
                   {currentUser && !isTaskCreator && taskData.status === 'open' && (
                     <div className="flex space-x-4">
-                      <button
-                        onClick={handleAcceptTask}
-                        disabled={acceptLoading}
-                        className="flex-1 bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-3 rounded-xl font-bold hover:opacity-90 transition duration-200 flex items-center justify-center shadow-lg"
-                      >
-                        {acceptLoading ? (
-                          <Loader className="w-5 h-5 animate-spin" />
-                        ) : (
-                          <>
-                            <CheckCircle className="w-5 h-5 mr-2" />
-                            {taskData.price > 0 ? `Accept & Pay $${taskData.price}` : 'Accept Task'}
-                          </>
-                        )}
-                      </button>
+                      <StarBorder color="#0038FF" className="flex-1">
+                        <button
+                          onClick={handleAcceptTask}
+                          disabled={acceptLoading}
+                          className="w-full bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-3 rounded-lg font-bold hover:opacity-90 transition duration-200 flex items-center justify-center"
+                        >
+                          {acceptLoading ? (
+                            <Loader className="w-5 h-5 animate-spin" />
+                          ) : (
+                            <>
+                              <CheckCircle className="w-5 h-5 mr-2" />
+                              {taskData.price > 0 ? `Accept & Pay $${taskData.price}` : 'Accept Task'}
+                            </>
+                          )}
+                        </button>
+                      </StarBorder>
                       <button
                         onClick={handleDeclineTask}
                         disabled={declineLoading}
@@ -838,16 +870,18 @@ const TaskDetails: React.FC<TaskDetailsProps> = ({ task, onClose, onAccept }) =>
 
                   {/* Chat Button (for task participants) */}
                   {isTaskParticipant && !showChat && otherUserProfile && activeTab === 'details' && (
-                    <button
-                      onClick={() => {
-                        setShowChat(true);
-                        setActiveTab('chat');
-                      }}
-                      className="w-full bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-3 rounded-xl font-bold hover:opacity-90 transition duration-200 flex items-center justify-center shadow-lg"
-                    >
-                      <MessageSquare className="w-5 h-5 mr-2" />
-                      Open Chat
-                    </button>
+                    <StarBorder color="#0038FF">
+                      <button
+                        onClick={() => {
+                          setShowChat(true);
+                          setActiveTab('chat');
+                        }}
+                        className="w-full bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-3 rounded-lg font-bold hover:opacity-90 transition duration-200 flex items-center justify-center"
+                      >
+                        <MessageSquare className="w-5 h-5 mr-2" />
+                        Open Chat
+                      </button>
+                    </StarBorder>
                   )}
                 </div>
               </div>

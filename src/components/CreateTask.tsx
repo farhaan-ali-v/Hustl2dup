@@ -478,6 +478,14 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
   const [isFreeTask, setIsFreeTask] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showTaskForm, setShowTaskForm] = useState(false);
+  
+  // New state for custom payment rate
+  const [customPrice, setCustomPrice] = useState<string>('');
+  const [useCustomPrice, setUseCustomPrice] = useState(false);
+  const [priceType, setPriceType] = useState<'calculated' | 'custom'>('calculated');
+  const [hourlyRate, setHourlyRate] = useState<string>('');
+  const [useHourlyRate, setUseHourlyRate] = useState(false);
+  const [estimatedHours, setEstimatedHours] = useState<string>('1');
 
   useEffect(() => {
     // Initialize with user location if available
@@ -492,6 +500,9 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
       setCategory(selectedTemplate.category);
       setEstimatedTime(selectedTemplate.estimatedTime);
       setIsFreeTask(selectedTemplate.is_free || selectedTemplate.price === 0);
+      if (selectedTemplate.price > 0) {
+        setCustomPrice(selectedTemplate.price.toString());
+      }
       setShowTemplates(false);
       setShowTaskForm(true);
     }
@@ -507,10 +518,23 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
   }, [userLocation, selectedTemplate, prefilledLocation]);
 
   useEffect(() => {
-    if (locationCoords && currentLocation && !isFreeTask) {
+    if (locationCoords && currentLocation && !isFreeTask && priceType === 'calculated') {
       calculatePrice();
     }
-  }, [locationCoords, currentLocation, urgencyValue, isFreeTask]);
+  }, [locationCoords, currentLocation, urgencyValue, isFreeTask, priceType]);
+
+  // Calculate price when hourly rate or estimated hours change
+  useEffect(() => {
+    if (useHourlyRate && hourlyRate && estimatedHours) {
+      const rate = parseFloat(hourlyRate);
+      const hours = parseFloat(estimatedHours);
+      
+      if (!isNaN(rate) && !isNaN(hours) && rate > 0 && hours > 0) {
+        const totalPrice = rate * hours;
+        setCustomPrice(totalPrice.toFixed(2));
+      }
+    }
+  }, [useHourlyRate, hourlyRate, estimatedHours]);
 
   const loadWalletBalance = async () => {
     try {
@@ -568,6 +592,9 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
     setCategory(category.category);
     setEstimatedTime(category.estimatedTime);
     setIsFreeTask(category.is_free || category.price === 0);
+    if (category.price > 0) {
+      setCustomPrice(category.price.toString());
+    }
     setShowTemplates(false);
     setShowTaskForm(true);
   };
@@ -584,9 +611,29 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
       return;
     }
 
-    if (!isFreeTask && !priceBreakdown?.total) {
-      toast.error('Price calculation is required');
-      return;
+    // Validate price
+    let finalPrice = 0;
+    if (!isFreeTask) {
+      if (priceType === 'calculated' && !priceBreakdown?.total) {
+        toast.error('Price calculation is required');
+        return;
+      } else if (priceType === 'custom') {
+        const parsedPrice = parseFloat(customPrice);
+        if (isNaN(parsedPrice) || parsedPrice <= 0) {
+          toast.error('Please enter a valid price');
+          return;
+        }
+        
+        // Check if price is reasonable (e.g., not too high)
+        if (parsedPrice > 100) {
+          toast.error('Price seems unusually high. Please enter a reasonable amount.');
+          return;
+        }
+        
+        finalPrice = parsedPrice;
+      } else {
+        finalPrice = priceBreakdown?.total || 0;
+      }
     }
 
     setLoading(true);
@@ -598,13 +645,15 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
       const taskData = {
         title,
         description,
-        price: isFreeTask ? 0 : (priceBreakdown?.total || 0),
+        price: isFreeTask ? 0 : finalPrice,
         location: locationCoords.address || `${locationCoords.lat},${locationCoords.lng}`,
         location_coords: locationCoords,
         estimated_time: estimatedTime,
         category,
         created_by: user.uid,
-        status: 'open'
+        status: 'open',
+        hourly_rate: useHourlyRate ? parseFloat(hourlyRate) : null,
+        estimated_hours: useHourlyRate ? parseFloat(estimatedHours) : null
       };
 
       // If it's a free task, create it directly
@@ -619,14 +668,14 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
       // For paid tasks, check payment method
       if (paymentMethod === 'wallet') {
         // Check if user has sufficient balance
-        if (walletBalance < priceBreakdown.total) {
+        if (walletBalance < finalPrice) {
           toast.error('Insufficient wallet balance. Please add funds or use Stripe payment.');
           return;
         }
 
         // Process wallet payment
         const taskId = await taskService.createTask(taskData);
-        await walletService.processTaskPayment(taskId, priceBreakdown.total);
+        await walletService.processTaskPayment(taskId, finalPrice);
         await createNotification(user.uid, taskId);
         setCreatedTaskId(taskId);
         setShowSuccessModal(true);
@@ -671,6 +720,9 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
     setCategory(template.category);
     setEstimatedTime(template.estimated_time);
     setIsFreeTask(template.is_free || template.price === 0);
+    if (template.price > 0) {
+      setCustomPrice(template.price.toString());
+    }
     setShowTemplates(false);
     setShowTaskForm(true);
   };
@@ -698,6 +750,9 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
     setCategory(template.category);
     setEstimatedTime(template.estimated_time);
     setIsFreeTask(template.is_free || template.price === 0);
+    if (template.price > 0) {
+      setCustomPrice(template.price.toString());
+    }
     setShowTemplates(false);
     setShowTaskForm(true);
     
@@ -743,6 +798,62 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
     onClose();
     // Navigate to marketplace to view the task
     window.dispatchEvent(new CustomEvent('view-task', { detail: { taskId: createdTaskId } }));
+  };
+
+  // Function to handle price type change
+  const handlePriceTypeChange = (type: 'calculated' | 'custom') => {
+    setPriceType(type);
+    if (type === 'calculated') {
+      setUseCustomPrice(false);
+      setUseHourlyRate(false);
+      calculatePrice();
+    } else {
+      setUseCustomPrice(true);
+    }
+  };
+
+  // Function to toggle hourly rate
+  const toggleHourlyRate = () => {
+    setUseHourlyRate(!useHourlyRate);
+    if (!useHourlyRate && hourlyRate && estimatedHours) {
+      const rate = parseFloat(hourlyRate);
+      const hours = parseFloat(estimatedHours);
+      if (!isNaN(rate) && !isNaN(hours)) {
+        setCustomPrice((rate * hours).toFixed(2));
+      }
+    }
+  };
+
+  // Function to validate hourly rate
+  const validateHourlyRate = (value: string) => {
+    const rate = parseFloat(value);
+    if (isNaN(rate) || rate <= 0) {
+      return false;
+    }
+    
+    // Check if rate is reasonable (e.g., not too high)
+    if (rate > 50) {
+      toast.error('Hourly rate seems unusually high. Please enter a reasonable amount.');
+      return false;
+    }
+    
+    return true;
+  };
+
+  // Function to validate estimated hours
+  const validateEstimatedHours = (value: string) => {
+    const hours = parseFloat(value);
+    if (isNaN(hours) || hours <= 0) {
+      return false;
+    }
+    
+    // Check if hours is reasonable (e.g., not too high)
+    if (hours > 10) {
+      toast.error('Estimated hours seems unusually high. Please enter a reasonable amount.');
+      return false;
+    }
+    
+    return true;
   };
 
   return (
@@ -942,88 +1053,250 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
                   </div>
 
                   {!isFreeTask && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Urgency Level</label>
-                      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                        <input
-                          type="range"
-                          min="0"
-                          max="100"
-                          value={urgencyValue}
-                          onChange={(e) => setUrgencyValue(parseInt(e.target.value))}
-                          className="mt-2 w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                        />
-                        <div className="mt-1 flex justify-between text-sm text-gray-500">
-                          <span className="flex items-center">
-                            <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
-                            Low
-                          </span>
-                          <span className="flex items-center">
-                            <span className="w-2 h-2 bg-yellow-500 rounded-full mr-1"></span>
-                            Medium
-                          </span>
-                          <span className="flex items-center">
-                            <span className="w-2 h-2 bg-red-500 rounded-full mr-1"></span>
-                            High
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {calculating ? (
-                    <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-center">
-                      <Calculator className="w-5 h-5 text-gray-400 animate-spin mr-2" />
-                      <span className="text-gray-600">Calculating price...</span>
-                    </div>
-                  ) : priceBreakdown && !isFreeTask && (
                     <>
-                      <PriceBreakdown
-                        breakdown={priceBreakdown}
-                        urgencyLevel={getUrgencyLevel(urgencyValue)}
-                      />
-
-                      {/* Payment Method Selection */}
-                      <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                      {/* Payment Type Selection */}
+                      <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
                         <h4 className="font-medium mb-3 flex items-center">
                           <DollarSign className="w-4 h-4 mr-1 text-blue-600" />
-                          Payment Method
+                          Payment Options
                         </h4>
+                        
                         <div className="space-y-3">
                           <label className="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer">
                             <input
                               type="radio"
-                              name="paymentMethod"
-                              value="wallet"
-                              checked={paymentMethod === 'wallet'}
-                              onChange={(e) => setPaymentMethod(e.target.value as 'wallet' | 'stripe')}
+                              name="priceType"
+                              checked={priceType === 'calculated'}
+                              onChange={() => handlePriceTypeChange('calculated')}
                               className="h-4 w-4 text-[#002B7F] focus:ring-[#002B7F]"
                             />
-                            <span className="ml-2 flex items-center">
-                              <DollarSign className="w-4 h-4 mr-1" />
-                              Wallet Balance: ${walletBalance.toFixed(2)}
-                              {walletBalance < priceBreakdown.total && (
-                                <span className="ml-2 text-red-600 text-sm">(Insufficient)</span>
-                              )}
-                            </span>
+                            <div className="ml-3">
+                              <p className="font-medium">Automatic Pricing</p>
+                              <p className="text-sm text-gray-600">Calculate price based on distance and urgency</p>
+                            </div>
                           </label>
                           
                           <label className="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer">
                             <input
                               type="radio"
-                              name="paymentMethod"
-                              value="stripe"
-                              checked={paymentMethod === 'stripe'}
-                              onChange={(e) => setPaymentMethod(e.target.value as 'wallet' | 'stripe')}
+                              name="priceType"
+                              checked={priceType === 'custom'}
+                              onChange={() => handlePriceTypeChange('custom')}
                               className="h-4 w-4 text-[#002B7F] focus:ring-[#002B7F]"
                             />
-                            <span className="ml-2 flex items-center">
-                              <Shield className="w-4 h-4 mr-1" />
-                              Credit/Debit Card (Stripe)
-                            </span>
+                            <div className="ml-3">
+                              <p className="font-medium">Set Your Own Price</p>
+                              <p className="text-sm text-gray-600">Specify exactly how much you want to pay</p>
+                            </div>
                           </label>
                         </div>
                       </div>
+
+                      {/* Urgency Level (only for calculated price) */}
+                      {priceType === 'calculated' && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-1">Urgency Level</label>
+                          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <input
+                              type="range"
+                              min="0"
+                              max="100"
+                              value={urgencyValue}
+                              onChange={(e) => setUrgencyValue(parseInt(e.target.value))}
+                              className="mt-2 w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                            />
+                            <div className="mt-1 flex justify-between text-sm text-gray-500">
+                              <span className="flex items-center">
+                                <span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span>
+                                Low
+                              </span>
+                              <span className="flex items-center">
+                                <span className="w-2 h-2 bg-yellow-500 rounded-full mr-1"></span>
+                                Medium
+                              </span>
+                              <span className="flex items-center">
+                                <span className="w-2 h-2 bg-red-500 rounded-full mr-1"></span>
+                                High
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Custom Price Input (only for custom price) */}
+                      {priceType === 'custom' && (
+                        <div className="space-y-4">
+                          <div className="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <input
+                              type="checkbox"
+                              id="hourlyRate"
+                              checked={useHourlyRate}
+                              onChange={() => toggleHourlyRate()}
+                              className="h-5 w-5 text-[#002B7F] focus:ring-[#002B7F] border-gray-300 rounded"
+                            />
+                            <label htmlFor="hourlyRate" className="ml-3 block text-sm text-gray-700 font-medium">
+                              Set hourly rate instead of fixed price
+                            </label>
+                          </div>
+                          
+                          {useHourlyRate ? (
+                            <div className="space-y-3">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Hourly Rate ($)
+                                </label>
+                                <div className="mt-1 relative rounded-lg shadow-sm">
+                                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <DollarSign className="h-5 w-5 text-gray-400" />
+                                  </div>
+                                  <input
+                                    type="number"
+                                    value={hourlyRate}
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+                                      setHourlyRate(value);
+                                      if (validateHourlyRate(value) && estimatedHours) {
+                                        const rate = parseFloat(value);
+                                        const hours = parseFloat(estimatedHours);
+                                        setCustomPrice((rate * hours).toFixed(2));
+                                      }
+                                    }}
+                                    min="1"
+                                    step="0.01"
+                                    required={useHourlyRate}
+                                    className="block w-full pl-10 rounded-lg border-gray-300 focus:border-[#002B7F] focus:ring focus:ring-[#002B7F] focus:ring-opacity-50 px-4 py-3"
+                                    placeholder="e.g. 15.00"
+                                  />
+                                </div>
+                              </div>
+                              
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Estimated Hours
+                                </label>
+                                <div className="mt-1 relative rounded-lg shadow-sm">
+                                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <Clock className="h-5 w-5 text-gray-400" />
+                                  </div>
+                                  <input
+                                    type="number"
+                                    value={estimatedHours}
+                                    onChange={(e) => {
+                                      const value = e.target.value;
+                                      setEstimatedHours(value);
+                                      if (validateEstimatedHours(value) && hourlyRate) {
+                                        const rate = parseFloat(hourlyRate);
+                                        const hours = parseFloat(value);
+                                        setCustomPrice((rate * hours).toFixed(2));
+                                      }
+                                    }}
+                                    min="0.5"
+                                    step="0.5"
+                                    required={useHourlyRate}
+                                    className="block w-full pl-10 rounded-lg border-gray-300 focus:border-[#002B7F] focus:ring focus:ring-[#002B7F] focus:ring-opacity-50 px-4 py-3"
+                                    placeholder="e.g. 1.5"
+                                  />
+                                </div>
+                              </div>
+                              
+                              <div className="bg-blue-50 p-3 rounded-lg">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-sm font-medium text-gray-700">Total Price:</span>
+                                  <span className="text-lg font-bold text-[#002B7F]">
+                                    ${customPrice || '0.00'}
+                                  </span>
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">
+                                  ${hourlyRate || '0.00'}/hr × {estimatedHours || '0'} hours
+                                </p>
+                              </div>
+                            </div>
+                          ) : (
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Fixed Price ($)
+                              </label>
+                              <div className="mt-1 relative rounded-lg shadow-sm">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                  <DollarSign className="h-5 w-5 text-gray-400" />
+                                </div>
+                                <input
+                                  type="number"
+                                  value={customPrice}
+                                  onChange={(e) => setCustomPrice(e.target.value)}
+                                  min="1"
+                                  step="0.01"
+                                  required={priceType === 'custom' && !useHourlyRate}
+                                  className="block w-full pl-10 rounded-lg border-gray-300 focus:border-[#002B7F] focus:ring focus:ring-[#002B7F] focus:ring-opacity-50 px-4 py-3"
+                                  placeholder="e.g. 10.00"
+                                />
+                              </div>
+                              
+                              <div className="mt-2 p-3 bg-blue-50 rounded-lg">
+                                <p className="text-sm text-blue-700">
+                                  Set a fair price that reflects the effort and time required for your task.
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {calculating ? (
+                        <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-center">
+                          <Calculator className="w-5 h-5 text-gray-400 animate-spin mr-2" />
+                          <span className="text-gray-600">Calculating price...</span>
+                        </div>
+                      ) : priceBreakdown && !isFreeTask && priceType === 'calculated' && (
+                        <>
+                          <PriceBreakdown
+                            breakdown={priceBreakdown}
+                            urgencyLevel={getUrgencyLevel(urgencyValue)}
+                          />
+
+                          {/* Payment Method Selection */}
+                          <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                            <h4 className="font-medium mb-3 flex items-center">
+                              <DollarSign className="w-4 h-4 mr-1 text-blue-600" />
+                              Payment Method
+                            </h4>
+                            <div className="space-y-3">
+                              <label className="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="paymentMethod"
+                                  value="wallet"
+                                  checked={paymentMethod === 'wallet'}
+                                  onChange={(e) => setPaymentMethod(e.target.value as 'wallet' | 'stripe')}
+                                  className="h-4 w-4 text-[#002B7F] focus:ring-[#002B7F]"
+                                />
+                                <span className="ml-2 flex items-center">
+                                  <DollarSign className="w-4 h-4 mr-1" />
+                                  Wallet Balance: ${walletBalance.toFixed(2)}
+                                  {walletBalance < priceBreakdown.total && (
+                                    <span className="ml-2 text-red-600 text-sm">(Insufficient)</span>
+                                  )}
+                                </span>
+                              </label>
+                              
+                              <label className="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer">
+                                <input
+                                  type="radio"
+                                  name="paymentMethod"
+                                  value="stripe"
+                                  checked={paymentMethod === 'stripe'}
+                                  onChange={(e) => setPaymentMethod(e.target.value as 'wallet' | 'stripe')}
+                                  className="h-4 w-4 text-[#002B7F] focus:ring-[#002B7F]"
+                                />
+                                <span className="ml-2 flex items-center">
+                                  <Shield className="w-4 h-4 mr-1" />
+                                  Credit/Debit Card (Stripe)
+                                </span>
+                              </label>
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </>
                   )}
 
@@ -1048,7 +1321,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
                 >
                   <button
                     type="submit"
-                    disabled={loading || (!isFreeTask && calculating) || !locationCoords}
+                    disabled={loading || (!isFreeTask && priceType === 'calculated' && calculating) || !locationCoords}
                     className={`w-full flex justify-center py-3 px-4 rounded-xl shadow-sm text-base font-semibold text-white ${
                       isFreeTask 
                         ? "bg-gradient-to-r from-[#0038FF] to-[#0021A5]" 
@@ -1076,7 +1349,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
         {showCheckout && createdTaskId && priceBreakdown && (
           <StripeCheckout
             taskId={createdTaskId}
-            amount={priceBreakdown.total}
+            amount={priceType === 'custom' ? parseFloat(customPrice) : priceBreakdown.total}
             onClose={() => {
               setShowCheckout(false);
               onClose();

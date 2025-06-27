@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { User, Mail, MapPin, Star, Edit, Camera, Save, X, Shield, Award, DollarSign, Clock, Package, CheckSquare, Loader, History } from 'lucide-react';
+import { User, Mail, MapPin, Star, Edit, Camera, Save, X, Shield, Award, DollarSign, Clock, Package, CheckSquare, Loader, History, Briefcase } from 'lucide-react';
 import { auth, db, storage } from '../lib/firebase';
 import { doc, getDoc, updateDoc, collection, query, where, getDocs, orderBy } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import toast from 'react-hot-toast';
 import TaskHistory from './TaskHistory';
+import { StarBorder } from './ui/star-border';
 
 const UserProfile: React.FC = () => {
   const [profile, setProfile] = useState<any>(null);
@@ -16,6 +17,10 @@ const UserProfile: React.FC = () => {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [activeTab, setActiveTab] = useState<'profile' | 'tasks' | 'stats' | 'history'>('profile');
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  
+  // New state for hourly rate settings
+  const [hourlyRate, setHourlyRate] = useState<string>('');
+  const [editingRate, setEditingRate] = useState(false);
 
   useEffect(() => {
     loadUserData();
@@ -38,6 +43,11 @@ const UserProfile: React.FC = () => {
         };
         setProfile(profileData);
         setEditedProfile(profileData);
+        
+        // Set hourly rate if it exists
+        if (profileData.hourly_rate) {
+          setHourlyRate(profileData.hourly_rate.toString());
+        }
       }
 
       // Get user stats
@@ -174,6 +184,48 @@ const UserProfile: React.FC = () => {
     
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
     return date.toLocaleDateString();
+  };
+  
+  // Function to save hourly rate
+  const saveHourlyRate = async () => {
+    try {
+      setLoading(true);
+      const user = auth.currentUser;
+      if (!user) throw new Error('User not authenticated');
+      
+      // Validate hourly rate
+      const rate = parseFloat(hourlyRate);
+      if (isNaN(rate) || rate <= 0) {
+        toast.error('Please enter a valid hourly rate');
+        return;
+      }
+      
+      // Check if rate is reasonable
+      if (rate > 50) {
+        toast.error('Hourly rate seems unusually high. Please enter a reasonable amount.');
+        return;
+      }
+      
+      // Update profile with hourly rate
+      await updateDoc(doc(db, 'profiles', user.uid), {
+        hourly_rate: rate,
+        updated_at: new Date()
+      });
+      
+      // Update local state
+      setProfile({
+        ...profile,
+        hourly_rate: rate
+      });
+      
+      setEditingRate(false);
+      toast.success('Hourly rate updated successfully');
+    } catch (error) {
+      console.error('Error updating hourly rate:', error);
+      toast.error('Error updating hourly rate');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading && !profile) {
@@ -423,6 +475,78 @@ const UserProfile: React.FC = () => {
                       </div>
                     </div>
                   </div>
+                  
+                  {/* Hourly Rate Section */}
+                  <div className="flex items-start">
+                    <Briefcase className="w-5 h-5 text-gray-400 mt-1 mr-3" />
+                    <div className="flex-1">
+                      <h3 className="text-sm font-medium text-gray-500">Default Hourly Rate</h3>
+                      {editingRate ? (
+                        <div className="mt-2 flex items-center">
+                          <div className="relative flex-1 mr-2">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                              <DollarSign className="h-5 w-5 text-gray-400" />
+                            </div>
+                            <input
+                              type="number"
+                              value={hourlyRate}
+                              onChange={(e) => setHourlyRate(e.target.value)}
+                              min="1"
+                              step="0.01"
+                              className="block w-full pl-10 rounded-lg border-gray-300 focus:border-[#0038FF] focus:ring focus:ring-[#0038FF] focus:ring-opacity-50 px-4 py-2"
+                              placeholder="e.g. 15.00"
+                            />
+                          </div>
+                          <button
+                            onClick={saveHourlyRate}
+                            disabled={loading}
+                            className="bg-[#0038FF] text-white px-3 py-2 rounded-lg hover:bg-[#0021A5] transition-colors"
+                          >
+                            {loading ? (
+                              <Loader className="w-5 h-5 animate-spin" />
+                            ) : (
+                              <Save className="w-5 h-5" />
+                            )}
+                          </button>
+                          <button
+                            onClick={() => setEditingRate(false)}
+                            className="ml-2 text-gray-500 hover:text-gray-700 p-2"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="mt-1 flex items-center">
+                          {profile?.hourly_rate ? (
+                            <div className="flex items-center">
+                              <span className="font-medium text-lg">${profile.hourly_rate.toFixed(2)}</span>
+                              <span className="text-sm text-gray-500 ml-2">per hour</span>
+                              <button
+                                onClick={() => setEditingRate(true)}
+                                className="ml-3 text-[#0038FF] hover:text-[#0021A5] p-1"
+                              >
+                                <Edit className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center">
+                              <span className="text-gray-500">Not set</span>
+                              <button
+                                onClick={() => setEditingRate(true)}
+                                className="ml-3 text-[#0038FF] hover:text-[#0021A5] flex items-center text-sm"
+                              >
+                                <Edit className="w-4 h-4 mr-1" />
+                                Set Rate
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      <p className="text-xs text-gray-500 mt-1">
+                        This rate will be suggested as the default when creating new tasks
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -432,12 +556,14 @@ const UserProfile: React.FC = () => {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">My Tasks</h2>
-                <button
-                  onClick={handleCreateNewTask}
-                  className="bg-[#FF5A1F] text-white px-4 py-2 rounded-lg hover:bg-[#E63A0B] transition-colors"
-                >
-                  Create New Task
-                </button>
+                <StarBorder color="#FF5A1F">
+                  <button
+                    onClick={handleCreateNewTask}
+                    className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-4 py-2 rounded-lg font-semibold flex items-center"
+                  >
+                    Create New Task
+                  </button>
+                </StarBorder>
               </div>
               
               {tasks.length === 0 ? (
@@ -475,6 +601,11 @@ const UserProfile: React.FC = () => {
                         <div className="flex items-center text-sm">
                           <DollarSign className="w-4 h-4 mr-1 text-[#0038FF]" />
                           <span className="font-medium text-[#0038FF]">${task.price}</span>
+                          {task.hourly_rate && (
+                            <span className="ml-2 text-gray-500">
+                              (${task.hourly_rate}/hr × {task.estimated_hours || 1}h)
+                            </span>
+                          )}
                         </div>
                         <span className="text-xs text-gray-500">{formatDate(task.created_at)}</span>
                       </div>

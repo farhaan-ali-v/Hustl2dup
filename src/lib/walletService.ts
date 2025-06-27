@@ -316,6 +316,80 @@ class WalletService {
     }
   }
 
+  // Transfer funds from one user to another (for task completion)
+  async transferFunds(
+    fromUserId: string,
+    toUserId: string,
+    amount: number,
+    taskId: string
+  ): Promise<void> {
+    try {
+      // Get sender's wallet
+      const fromWalletRef = doc(db, 'wallets', fromUserId);
+      const fromWalletDoc = await getDoc(fromWalletRef);
+      
+      if (!fromWalletDoc.exists()) {
+        throw new Error('Sender wallet not found');
+      }
+      
+      // Get receiver's wallet
+      const toWalletRef = doc(db, 'wallets', toUserId);
+      const toWalletDoc = await getDoc(toWalletRef);
+      
+      if (!toWalletDoc.exists()) {
+        // Create receiver wallet if it doesn't exist
+        await setDoc(toWalletRef, {
+          user_id: toUserId,
+          balance: 0,
+          created_at: serverTimestamp(),
+          updated_at: serverTimestamp()
+        });
+      }
+      
+      // Get current balances
+      const fromBalance = fromWalletDoc.data().balance || 0;
+      const toBalance = toWalletDoc.exists() ? toWalletDoc.data().balance || 0 : 0;
+      
+      // Check if sender has sufficient balance
+      if (fromBalance < amount) {
+        throw new Error('Insufficient balance for transfer');
+      }
+      
+      // Create transaction records
+      await addDoc(collection(db, 'transactions'), {
+        user_id: fromUserId,
+        task_id: taskId,
+        amount: -amount,
+        type: 'debit',
+        description: `Payment for task ${taskId}`,
+        created_at: serverTimestamp()
+      });
+      
+      await addDoc(collection(db, 'transactions'), {
+        user_id: toUserId,
+        task_id: taskId,
+        amount: amount,
+        type: 'credit',
+        description: `Payment received for task ${taskId}`,
+        created_at: serverTimestamp()
+      });
+      
+      // Update wallet balances
+      await updateDoc(fromWalletRef, {
+        balance: fromBalance - amount,
+        updated_at: serverTimestamp()
+      });
+      
+      await updateDoc(toWalletRef, {
+        balance: toBalance + amount,
+        updated_at: serverTimestamp()
+      });
+    } catch (error) {
+      console.error('Error transferring funds:', error);
+      throw error;
+    }
+  }
+
   // Subscribe to wallet changes
   subscribeToWalletUpdates = (callback: (balance: number) => void): (() => void) => {
     // Clean up any existing subscription first

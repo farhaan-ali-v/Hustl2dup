@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, MapPin, Clock, DollarSign, Tag, User, Map as MapIcon, List, AlertCircle, CheckCircle, X as XIcon, Package, PlusCircle, Flame, ArrowRight, MessageSquare } from 'lucide-react';
+import { Search, Filter, MapPin, Clock, DollarSign, Tag, User, Map as MapIcon, List, AlertCircle, CheckCircle, X as XIcon, Package, PlusCircle, Flame, ArrowRight, MessageSquare, Briefcase } from 'lucide-react';
 import InteractiveCampusMap from './InteractiveCampusMap';
 import TaskDetails from './TaskDetails';
 import { Location } from '../lib/locationService';
@@ -364,6 +364,21 @@ const TaskMarketplace: React.FC<TaskMarketplaceProps> = ({ userLocation }) => {
     );
   };
 
+  // Format hourly rate display
+  const formatHourlyRate = (task: any) => {
+    if (!task.hourly_rate) return null;
+    
+    const hourlyRate = task.hourly_rate;
+    const estimatedHours = task.estimated_hours || 1;
+    
+    return (
+      <div className="flex items-center text-sm text-gray-500">
+        <Briefcase className="w-4 h-4 mr-1 text-gray-400" />
+        <span>${hourlyRate.toFixed(2)}/hr × {estimatedHours}h</span>
+      </div>
+    );
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 bg-gray-50">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
@@ -554,7 +569,7 @@ const TaskMarketplace: React.FC<TaskMarketplaceProps> = ({ userLocation }) => {
                 <p className="text-gray-600 mb-4 line-clamp-2">{task.description}</p>
                 
                 {/* Location and Time */}
-                <div className="flex items-center space-x-4 mb-4">
+                <div className="flex flex-wrap gap-2 mb-4">
                   <div className="flex items-center text-sm text-gray-500">
                     <Clock className="w-4 h-4 mr-1 text-gray-400" />
                     <span>{formatTimeLeft(task)}</span>
@@ -563,6 +578,7 @@ const TaskMarketplace: React.FC<TaskMarketplaceProps> = ({ userLocation }) => {
                     <MapPin className="w-4 h-4 mr-1 text-gray-400" />
                     <span className="truncate max-w-[150px]">{task.location.split(',')[0]}</span>
                   </div>
+                  {formatHourlyRate(task)}
                 </div>
                 
                 {/* User Info and Distance */}
