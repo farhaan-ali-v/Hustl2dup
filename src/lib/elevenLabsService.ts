@@ -57,20 +57,17 @@ class ElevenLabsService {
     }
 
     try {
-      const response = await fetch(`${this.baseUrl}/text-to-speech/${voiceId}`, {
+      // Use Firebase Function instead of direct API call
+      const functionUrl = `${import.meta.env.VITE_FIREBASE_FUNCTIONS_URL}/generateSpeech`;
+      
+      const response = await fetch(functionUrl, {
         method: 'POST',
         headers: {
-          'Accept': 'audio/mpeg',
           'Content-Type': 'application/json',
-          'xi-api-key': this.apiKey,
         },
         body: JSON.stringify({
           text,
-          model_id: 'eleven_monolingual_v1',
-          voice_settings: {
-            stability: 0.5,
-            similarity_boost: 0.5,
-          },
+          voiceId
         }),
       });
 

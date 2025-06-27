@@ -17,13 +17,18 @@ const TranslatableText: React.FC<TranslatableTextProps> = ({
   const [translatedText, setTranslatedText] = useState<string | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isTranslated, setIsTranslated] = useState(false);
-  const { currentLanguage } = useTranslation();
+  const { currentLanguage, autoTranslate } = useTranslation();
   
   useEffect(() => {
     // Reset translation when language changes
     setTranslatedText(null);
     setIsTranslated(false);
-  }, [currentLanguage, text]);
+    
+    // Auto-translate if enabled and language is not English
+    if (autoTranslate && currentLanguage !== 'en' && text) {
+      handleTranslate();
+    }
+  }, [currentLanguage, text, autoTranslate]);
   
   const handleTranslate = async () => {
     if (isTranslating || !text) return;
@@ -62,13 +67,6 @@ const TranslatableText: React.FC<TranslatableTextProps> = ({
     }
   };
   
-  // If auto-translate is enabled, translate on mount
-  useEffect(() => {
-    if (currentLanguage !== 'en' && text) {
-      handleTranslate();
-    }
-  }, []);
-  
   return (
     <div className={className}>
       <div className="relative">
@@ -78,7 +76,7 @@ const TranslatableText: React.FC<TranslatableTextProps> = ({
         </div>
         
         {/* Translation button */}
-        {showTranslateButton && text && (
+        {showTranslateButton && text && currentLanguage !== 'en' && (
           <button
             onClick={toggleTranslation}
             disabled={isTranslating}
