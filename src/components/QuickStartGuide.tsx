@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Package, Star, DollarSign, Shield, X, Coffee, Book, Dog, Car, GraduationCap, Users, Printer, ChevronLeft, ChevronRight, Zap, Award, Trophy } from 'lucide-react';
+import { ArrowRight, Package, Star, DollarSign, Shield, X, Coffee, Book, Dog, Car, GraduationCap, Users, Printer, ChevronLeft, ChevronRight, Zap, Award, Trophy, VolumeUp } from 'lucide-react';
+import { StarBorder } from './ui/star-border';
+import { elevenLabsService } from '../lib/elevenLabsService';
 
 interface QuickStartGuideProps {
   onClose: () => void;
@@ -57,6 +59,7 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
 }) => {
   const [hasShown, setHasShown] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   
   useEffect(() => {
     // Check if the guide has been shown before
@@ -64,7 +67,40 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
     if (guideShown) {
       setHasShown(true);
     }
+    
+    // Play welcome message when guide opens
+    playWelcomeMessage();
   }, []);
+  
+  const playWelcomeMessage = async () => {
+    setIsPlayingAudio(true);
+    await elevenLabsService.speakText(
+      "Welcome to Hustl! I'm your guide to getting started. Let me show you how to get help or earn money on campus."
+    );
+    setIsPlayingAudio(false);
+  };
+  
+  const playStepAudio = async (step: number) => {
+    setIsPlayingAudio(true);
+    let message = "";
+    
+    switch(step) {
+      case 1:
+        message = "What would you like to do? You can post a task to get help, or browse tasks to earn money helping others.";
+        break;
+      case 2:
+        message = "Here are our popular task categories. Choose one to get started quickly.";
+        break;
+      case 3:
+        message = "Hustl offers great features like safety verification, points and rewards, and flexible earnings.";
+        break;
+      default:
+        message = "Let's get started with Hustl!";
+    }
+    
+    await elevenLabsService.speakText(message);
+    setIsPlayingAudio(false);
+  };
   
   const handleCategoryClick = (template: string) => {
     markGuideAsShown();
@@ -83,11 +119,15 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
   };
 
   const nextStep = () => {
-    setCurrentStep(prev => Math.min(prev + 1, 3));
+    const newStep = Math.min(currentStep + 1, 3);
+    setCurrentStep(newStep);
+    playStepAudio(newStep);
   };
 
   const prevStep = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
+    const newStep = Math.max(currentStep - 1, 1);
+    setCurrentStep(newStep);
+    playStepAudio(newStep);
   };
 
   return (
@@ -105,16 +145,26 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
               Your campus task marketplace - get help or earn money helping others
             </p>
           </div>
-          <button 
-            onClick={() => {
-              markGuideAsShown();
-              onClose();
-            }}
-            className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors"
-            aria-label="Close guide"
-          >
-            <X className="w-6 h-6" />
-          </button>
+          <div className="flex items-center">
+            <button
+              onClick={() => playStepAudio(currentStep)}
+              disabled={isPlayingAudio}
+              className={`mr-2 p-2 rounded-full ${isPlayingAudio ? 'bg-blue-100 text-[#0038FF]' : 'text-gray-500 hover:text-[#0038FF] hover:bg-blue-50'} transition-colors`}
+              aria-label="Play audio guide"
+            >
+              <VolumeUp className={`w-6 h-6 ${isPlayingAudio ? 'animate-pulse' : ''}`} />
+            </button>
+            <button 
+              onClick={() => {
+                markGuideAsShown();
+                onClose();
+              }}
+              className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors"
+              aria-label="Close guide"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
         </div>
 
         {/* Progress Bar */}
@@ -132,39 +182,43 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
               <h3 className="text-xl font-semibold text-center">What would you like to do?</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <button
-                  onClick={() => {
-                    markGuideAsShown();
-                    onCreateTask?.();
-                  }}
-                  className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white p-5 rounded-2xl hover:opacity-90 transition-colors group shadow-lg"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <Package className="w-7 h-7" />
-                    <ArrowRight className="w-5 h-5 transform group-hover:translate-x-2 transition-transform" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-left mb-2">Post a Task</h3>
-                  <p className="text-left text-orange-100 text-sm">
-                    Need help with something? Create a task and find someone to help you.
-                  </p>
-                </button>
+                <StarBorder color="#FF5A1F">
+                  <button
+                    onClick={() => {
+                      markGuideAsShown();
+                      onCreateTask?.();
+                    }}
+                    className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white p-5 rounded-lg hover:opacity-90 transition-colors group w-full"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <Package className="w-7 h-7" />
+                      <ArrowRight className="w-5 h-5 transform group-hover:translate-x-2 transition-transform" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-left mb-2">Post a Task</h3>
+                    <p className="text-left text-orange-100 text-sm">
+                      Need help with something? Create a task and find someone to help you.
+                    </p>
+                  </button>
+                </StarBorder>
 
-                <button
-                  onClick={() => {
-                    markGuideAsShown();
-                    onBrowseTasks?.();
-                  }}
-                  className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white p-5 rounded-2xl hover:opacity-90 transition-colors group shadow-lg"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <DollarSign className="w-7 h-7" />
-                    <ArrowRight className="w-5 h-5 transform group-hover:translate-x-2 transition-transform" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-left mb-2">Browse Tasks</h3>
-                  <p className="text-left text-blue-100 text-sm">
-                    Want to earn money? Find tasks you can help with around campus.
-                  </p>
-                </button>
+                <StarBorder color="#0038FF">
+                  <button
+                    onClick={() => {
+                      markGuideAsShown();
+                      onBrowseTasks?.();
+                    }}
+                    className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white p-5 rounded-lg hover:opacity-90 transition-colors group w-full"
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <DollarSign className="w-7 h-7" />
+                      <ArrowRight className="w-5 h-5 transform group-hover:translate-x-2 transition-transform" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-left mb-2">Browse Tasks</h3>
+                    <p className="text-left text-blue-100 text-sm">
+                      Want to earn money? Find tasks you can help with around campus.
+                    </p>
+                  </button>
+                </StarBorder>
               </div>
             </div>
           )}
@@ -240,6 +294,7 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
             <button
               onClick={prevStep}
               className="text-[#0F2557] hover:text-[#0A1B3D] font-medium flex items-center"
+              disabled={isPlayingAudio}
             >
               <ChevronLeft className="w-5 h-5 mr-1" />
               Back
@@ -251,27 +306,34 @@ const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
                 onClose();
               }}
               className="text-gray-500 hover:text-gray-700 text-sm"
+              disabled={isPlayingAudio}
             >
               Skip Guide
             </button>
           )}
 
           {currentStep < 3 ? (
-            <button
-              onClick={nextStep}
-              className="bg-[#0038FF] text-white px-5 py-2 rounded-xl hover:bg-[#0021A5] transition-colors flex items-center text-sm shadow-md font-semibold"
-            >
-              Next
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </button>
+            <StarBorder color="#0038FF" className="inline-block">
+              <button
+                onClick={nextStep}
+                className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-5 py-2 rounded-lg flex items-center text-sm font-semibold"
+                disabled={isPlayingAudio}
+              >
+                Next
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </button>
+            </StarBorder>
           ) : (
-            <button
-              onClick={handleGetStarted}
-              className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-5 py-2 rounded-xl hover:opacity-90 transition-colors flex items-center text-sm shadow-md font-semibold"
-            >
-              Get Started
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </button>
+            <StarBorder color="#FF5A1F" className="inline-block">
+              <button
+                onClick={handleGetStarted}
+                className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-5 py-2 rounded-lg flex items-center text-sm font-semibold"
+                disabled={isPlayingAudio}
+              >
+                Get Started
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </button>
+            </StarBorder>
           )}
         </div>
       </div>

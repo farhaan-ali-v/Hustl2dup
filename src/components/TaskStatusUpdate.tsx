@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { X, Package, Clock, Truck, Flag, CheckCircle, MessageSquare, ArrowRight, Star, Trophy, Zap, Shield } from 'lucide-react';
+import { X, Package, Clock, Truck, Flag, CheckCircle, MessageSquare, ArrowRight, Star, Trophy, Zap, Shield, VolumeUp } from 'lucide-react';
 import { taskService, taskProgressService, notificationService } from '../lib/database';
 import { auth } from '../lib/firebase';
 import toast from 'react-hot-toast';
 import GameChat from './GameChat';
 import { StarBorder } from './ui/star-border';
+import { elevenLabsService } from '../lib/elevenLabsService';
 
 interface TaskStatusUpdateProps {
   task: any;
@@ -20,6 +21,7 @@ const TaskStatusUpdate: React.FC<TaskStatusUpdateProps> = ({ task, onClose, onSt
   const [showChat, setShowChat] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [xpGained, setXpGained] = useState(0);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
   useEffect(() => {
     const user = auth.currentUser;
@@ -99,6 +101,25 @@ const TaskStatusUpdate: React.FC<TaskStatusUpdateProps> = ({ task, onClose, onSt
     return xpValues[status] || 0;
   };
 
+  const getStatusAnnouncement = (status: string): string => {
+    const announcements = {
+      'picked_up': `Great job! You've picked up the items for "${task.title}". Keep up the good work!`,
+      'in_progress': `You're now working on "${task.title}". The task creator will be notified of your progress.`,
+      'on_way': `You're on your way to deliver "${task.title}". The task creator can now track your location.`,
+      'delivered': `You've successfully delivered "${task.title}". Almost done!`,
+      'completed': `Congratulations! You've completed "${task.title}" and earned ${getXpForStatus('completed')} XP!`
+    };
+    
+    return announcements[status] || `Status updated to ${getStatusLabel(status)}`;
+  };
+
+  const playStatusAnnouncement = async (status: string) => {
+    setIsPlayingAudio(true);
+    const announcement = getStatusAnnouncement(status);
+    await elevenLabsService.speakText(announcement);
+    setIsPlayingAudio(false);
+  };
+
   const handleUpdateStatus = async (newStatus: string) => {
     try {
       setLoading(true);
@@ -136,6 +157,9 @@ const TaskStatusUpdate: React.FC<TaskStatusUpdateProps> = ({ task, onClose, onSt
       }
       
       toast.success(`Task status updated to ${getStatusLabel(newStatus)}`);
+      
+      // Play audio announcement
+      playStatusAnnouncement(newStatus);
       
       // If the user wants to chat, show the chat interface
       if (showChat) {
@@ -298,22 +322,33 @@ const TaskStatusUpdate: React.FC<TaskStatusUpdateProps> = ({ task, onClose, onSt
                     </label>
                   </div>
                   
-                  <StarBorder color="#0038FF">
+                  <div className="flex space-x-2">
+                    <StarBorder color="#0038FF">
+                      <button
+                        onClick={() => handleUpdateStatus(nextStatus)}
+                        disabled={loading || isPlayingAudio}
+                        className="w-full bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-4 rounded-lg font-bold flex items-center justify-center"
+                      >
+                        {loading ? (
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                        ) : (
+                          <>
+                            {nextStatusIcon}
+                            <span className="ml-2">Mark as {nextStatusLabel}</span>
+                          </>
+                        )}
+                      </button>
+                    </StarBorder>
+                    
                     <button
-                      onClick={() => handleUpdateStatus(nextStatus)}
-                      disabled={loading}
-                      className="w-full bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-4 py-4 rounded-lg font-bold flex items-center justify-center"
+                      onClick={() => playStatusAnnouncement(nextStatus)}
+                      disabled={isPlayingAudio}
+                      className="p-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors border border-gray-300 flex-shrink-0"
+                      title="Preview audio announcement"
                     >
-                      {loading ? (
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
-                      ) : (
-                        <>
-                          {nextStatusIcon}
-                          <span className="ml-2">Mark as {nextStatusLabel}</span>
-                        </>
-                      )}
+                      <VolumeUp className={`w-6 h-6 ${isPlayingAudio ? 'text-[#0038FF] animate-pulse' : ''}`} />
                     </button>
-                  </StarBorder>
+                  </div>
                   
                   {/* XP indicator */}
                   <div className="mt-2 text-center text-sm text-gray-500 flex items-center justify-center">
@@ -339,7 +374,7 @@ const TaskStatusUpdate: React.FC<TaskStatusUpdateProps> = ({ task, onClose, onSt
                       >
                         <button
                           onClick={() => handleUpdateStatus(status)}
-                          disabled={loading || status === task.status}
+                          disabled={loading || status === task.status || isPlayingAudio}
                           className={`p-4 rounded-lg flex flex-col items-center text-center transition-all w-full ${
                             status === task.status
                               ? 'bg-gray-100 cursor-not-allowed opacity-50'

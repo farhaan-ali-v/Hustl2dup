@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { CheckCircle, X, Calendar, Clock, Users, MessageSquare, Star, ArrowRight, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { CheckCircle, X, Calendar, Clock, Users, MessageSquare, Star, ArrowRight, Sparkles, VolumeUp } from 'lucide-react';
 import { taskService } from '../lib/database';
+import { elevenLabsService } from '../lib/elevenLabsService';
+import { StarBorder } from './ui/star-border';
 
 interface TaskCreationSuccessProps {
   taskId: string;
@@ -25,6 +27,7 @@ const TaskCreationSuccess: React.FC<TaskCreationSuccessProps> = ({ taskId, onClo
   const [loading, setLoading] = useState(true);
   const [confetti, setConfetti] = useState<ConfettiPiece[]>([]);
   const [showConfetti, setShowConfetti] = useState(true);
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
 
   useEffect(() => {
     loadTask();
@@ -34,6 +37,9 @@ const TaskCreationSuccess: React.FC<TaskCreationSuccessProps> = ({ taskId, onClo
     const timer = setTimeout(() => {
       setShowConfetti(false);
     }, 3000);
+    
+    // Play success message
+    playSuccessMessage();
 
     return () => clearTimeout(timer);
   }, [taskId]);
@@ -89,6 +95,14 @@ const TaskCreationSuccess: React.FC<TaskCreationSuccessProps> = ({ taskId, onClo
       setLoading(false);
     }
   };
+  
+  const playSuccessMessage = async () => {
+    setIsPlayingAudio(true);
+    await elevenLabsService.speakText(
+      "Congratulations! Your task has been created successfully. It's now live and visible to potential helpers. You'll receive notifications when someone accepts your task."
+    );
+    setIsPlayingAudio(false);
+  };
 
   const timelineSteps = [
     {
@@ -135,7 +149,7 @@ const TaskCreationSuccess: React.FC<TaskCreationSuccessProps> = ({ taskId, onClo
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
         <div className="bg-white rounded-lg p-8">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#0F2557] mx-auto"></div>
         </div>
@@ -144,7 +158,7 @@ const TaskCreationSuccess: React.FC<TaskCreationSuccessProps> = ({ taskId, onClo
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm p-4">
       {/* Confetti Animation */}
       {showConfetti && (
         <div className="fixed inset-0 pointer-events-none z-60">
@@ -166,12 +180,12 @@ const TaskCreationSuccess: React.FC<TaskCreationSuccessProps> = ({ taskId, onClo
         </div>
       )}
 
-      <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto relative">
+      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative shadow-2xl">
         {/* Header */}
-        <div className="p-6 border-b bg-gradient-to-r from-green-50 to-blue-50">
+        <div className="p-6 border-b bg-gradient-to-r from-green-50 to-blue-50 rounded-t-2xl">
           <div className="flex justify-between items-start">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4 shadow-md">
                 <CheckCircle className="w-8 h-8 text-green-600" />
               </div>
               <div>
@@ -182,9 +196,19 @@ const TaskCreationSuccess: React.FC<TaskCreationSuccessProps> = ({ taskId, onClo
                 <p className="text-gray-600 mt-1">Your task is now live and ready for helpers</p>
               </div>
             </div>
-            <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-              <X className="w-6 h-6" />
-            </button>
+            <div className="flex items-center">
+              <button
+                onClick={playSuccessMessage}
+                disabled={isPlayingAudio}
+                className={`mr-2 p-2 rounded-full ${isPlayingAudio ? 'bg-blue-100 text-[#0038FF]' : 'text-gray-500 hover:text-[#0038FF] hover:bg-blue-50'} transition-colors`}
+                aria-label="Play audio message"
+              >
+                <VolumeUp className={`w-5 h-5 ${isPlayingAudio ? 'animate-pulse' : ''}`} />
+              </button>
+              <button onClick={onClose} className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -195,7 +219,7 @@ const TaskCreationSuccess: React.FC<TaskCreationSuccessProps> = ({ taskId, onClo
             <p className="text-gray-600 mb-3">{task.description}</p>
             <div className="flex items-center space-x-4 text-sm text-gray-500">
               <span className="flex items-center">
-                <Calendar className="w-4 h-4 mr-1" />
+                <Clock className="w-4 h-4 mr-1" />
                 {task.estimated_time}
               </span>
               <span className="flex items-center font-semibold text-[#0F2557]">
@@ -277,13 +301,15 @@ const TaskCreationSuccess: React.FC<TaskCreationSuccessProps> = ({ taskId, onClo
         {/* Action Buttons */}
         <div className="p-6 border-t bg-white">
           <div className="flex space-x-3">
-            <button
-              onClick={onViewTask}
-              className="flex-1 bg-[#0F2557] text-white px-4 py-3 rounded-lg font-semibold hover:bg-[#0A1B3D] transition duration-200 flex items-center justify-center"
-            >
-              View My Task
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </button>
+            <StarBorder color="#0F2557" className="flex-1">
+              <button
+                onClick={onViewTask}
+                className="w-full bg-gradient-to-r from-[#0F2557] to-[#0A1B3D] text-white px-4 py-3 rounded-lg font-semibold flex items-center justify-center"
+              >
+                View My Task
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </button>
+            </StarBorder>
             <button
               onClick={onClose}
               className="flex-1 bg-gray-100 text-gray-700 px-4 py-3 rounded-lg font-semibold hover:bg-gray-200 transition duration-200"
