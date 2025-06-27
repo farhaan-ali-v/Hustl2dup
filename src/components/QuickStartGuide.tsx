@@ -1,344 +1,225 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Package, Star, DollarSign, Shield, X, Coffee, Book, Dog, Car, GraduationCap, Users, Printer, ChevronLeft, ChevronRight, Zap, Award, Trophy, Volume as VolumeUp } from 'lucide-react';
-import { StarBorder } from './ui/star-border';
+import { X, Play, Volume2, VolumeX, ChevronRight, ChevronLeft, Lightbulb, MapPin, MessageCircle, Wallet, Shield, Star } from 'lucide-react';
 import { elevenLabsService } from '../lib/elevenLabsService';
 
 interface QuickStartGuideProps {
+  isOpen: boolean;
   onClose: () => void;
-  onCreateTask?: () => void;
-  onBrowseTasks?: () => void;
 }
 
-const CATEGORIES = [
+const steps = [
   {
-    name: 'Food Delivery',
-    icon: <Coffee className="w-4 h-4 mr-2" />,
-    template: 'meal-delivery'
+    title: "Welcome to TaskMate!",
+    content: "Your campus task companion is here to help you get things done efficiently and safely.",
+    icon: <Star className="w-8 h-8 text-yellow-500" />,
+    audio: "Welcome to TaskMate! Your campus task companion is here to help you get things done efficiently and safely."
   },
   {
-    name: 'Academic Help',
-    icon: <Book className="w-4 h-4 mr-2" />,
-    template: 'study-materials'
+    title: "Create Your First Task",
+    content: "Tap the plus button to create a task. Whether it's food delivery, study help, or errands - we've got you covered!",
+    icon: <Lightbulb className="w-8 h-8 text-blue-500" />,
+    audio: "Create your first task by tapping the plus button. Whether it's food delivery, study help, or errands, we've got you covered!"
   },
   {
-    name: 'Pet Care',
-    icon: <Dog className="w-4 h-4 mr-2" />,
-    template: 'dog-walking'
+    title: "Track Everything Live",
+    content: "Watch your tasks in real-time on our interactive campus map. Stay informed every step of the way.",
+    icon: <MapPin className="w-8 h-8 text-green-500" />,
+    audio: "Track everything live on our interactive campus map. Stay informed every step of the way."
   },
   {
-    name: 'Coffee Runs',
-    icon: <Coffee className="w-4 h-4 mr-2" />,
-    template: 'coffee-run'
+    title: "Chat & Communicate",
+    content: "Built-in messaging keeps you connected with task helpers. Share updates, photos, and coordinate seamlessly.",
+    icon: <MessageCircle className="w-8 h-8 text-purple-500" />,
+    audio: "Built-in messaging keeps you connected with task helpers. Share updates, photos, and coordinate seamlessly."
   },
   {
-    name: 'Meal Swipes',
-    icon: <Users className="w-4 h-4 mr-2" />,
-    template: 'meal-exchange'
+    title: "Secure Payments",
+    content: "Your wallet is protected with secure payment processing. Add funds, track spending, and tip helpers easily.",
+    icon: <Wallet className="w-8 h-8 text-emerald-500" />,
+    audio: "Your wallet is protected with secure payment processing. Add funds, track spending, and tip helpers easily."
   },
   {
-    name: 'Study Groups',
-    icon: <GraduationCap className="w-4 h-4 mr-2" />,
-    template: 'study-group'
-  },
-  {
-    name: 'Quick Rides',
-    icon: <Car className="w-4 h-4 mr-2" />,
-    template: 'campus-rides'
-  },
-  {
-    name: 'Print & Pickup',
-    icon: <Printer className="w-4 h-4 mr-2" />,
-    template: 'print-pickup'
+    title: "Safety First",
+    content: "Emergency features, real-time tracking, and verified users ensure your safety is our top priority.",
+    icon: <Shield className="w-8 h-8 text-red-500" />,
+    audio: "Emergency features, real-time tracking, and verified users ensure your safety is our top priority."
   }
 ];
 
-const QuickStartGuide: React.FC<QuickStartGuideProps> = ({
-  onClose,
-  onCreateTask,
-  onBrowseTasks
-}) => {
-  const [hasShown, setHasShown] = useState(false);
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isPlayingAudio, setIsPlayingAudio] = useState(false);
-  
-  useEffect(() => {
-    // Check if the guide has been shown before
-    const guideShown = localStorage.getItem('quickStartGuideShown');
-    if (guideShown) {
-      setHasShown(true);
-    }
-    
-    // Play welcome message when guide opens
-    playWelcomeMessage();
-  }, []);
-  
+export default function QuickStartGuide({ isOpen, onClose }: QuickStartGuideProps) {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [isAudioEnabled, setIsAudioEnabled] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
+
   const playWelcomeMessage = async () => {
-    setIsPlayingAudio(true);
-    await elevenLabsService.speakText(
-      "Welcome to Hustl! I'm your guide to getting started. Let me show you how to get help or earn money on campus."
-    );
-    setIsPlayingAudio(false);
-  };
-  
-  const playStepAudio = async (step: number) => {
-    setIsPlayingAudio(true);
-    let message = "";
+    if (!isAudioEnabled || isPlaying) return;
     
-    switch(step) {
-      case 1:
-        message = "What would you like to do? You can post a task to get help, or browse tasks to earn money helping others.";
-        break;
-      case 2:
-        message = "Here are our popular task categories. Choose one to get started quickly.";
-        break;
-      case 3:
-        message = "Hustl offers great features like safety verification, points and rewards, and flexible earnings.";
-        break;
-      default:
-        message = "Let's get started with Hustl!";
+    setIsPlaying(true);
+    setVoiceError(null);
+    
+    try {
+      await elevenLabsService.speakText(steps[currentStep].audio);
+    } catch (error: any) {
+      console.warn('Voice playback failed:', error.message);
+      setVoiceError(error.message);
+      // Don't show error to user, just disable audio silently
+      setIsAudioEnabled(false);
+    } finally {
+      setIsPlaying(false);
     }
-    
-    await elevenLabsService.speakText(message);
-    setIsPlayingAudio(false);
-  };
-  
-  const handleCategoryClick = (template: string) => {
-    markGuideAsShown();
-    onClose();
-    onCreateTask?.();
   };
 
-  const handleGetStarted = () => {
-    markGuideAsShown();
-    onClose();
-  };
-  
-  const markGuideAsShown = () => {
-    localStorage.setItem('quickStartGuideShown', 'true');
-    setHasShown(true);
-  };
+  useEffect(() => {
+    if (isOpen && currentStep === 0 && isAudioEnabled) {
+      // Small delay to ensure modal is fully rendered
+      const timer = setTimeout(() => {
+        playWelcomeMessage();
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, currentStep, isAudioEnabled]);
 
   const nextStep = () => {
-    const newStep = Math.min(currentStep + 1, 3);
-    setCurrentStep(newStep);
-    playStepAudio(newStep);
+    if (currentStep < steps.length - 1) {
+      setCurrentStep(currentStep + 1);
+    }
   };
 
   const prevStep = () => {
-    const newStep = Math.max(currentStep - 1, 1);
-    setCurrentStep(newStep);
-    playStepAudio(newStep);
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1);
+    }
   };
 
+  const toggleAudio = () => {
+    setIsAudioEnabled(!isAudioEnabled);
+    setVoiceError(null);
+  };
+
+  if (!isOpen) return null;
+
+  const currentStepData = steps[currentStep];
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl w-full max-w-3xl p-6 mx-4 shadow-2xl">
-        <div className="flex justify-between items-center mb-6">
-          <div className="text-center flex-1">
-            <div className="flex items-center justify-center mb-2">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center shadow-lg">
-                <Trophy className="w-6 h-6 text-white" />
-              </div>
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white relative">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 p-2 hover:bg-white/20 rounded-full transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+          
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold">Quick Start Guide</h2>
+            <button
+              onClick={toggleAudio}
+              className="p-2 hover:bg-white/20 rounded-full transition-colors"
+              title={isAudioEnabled ? "Disable audio" : "Enable audio"}
+            >
+              {isAudioEnabled ? (
+                <Volume2 className="w-5 h-5" />
+              ) : (
+                <VolumeX className="w-5 h-5" />
+              )}
+            </button>
+          </div>
+          
+          {/* Progress bar */}
+          <div className="w-full bg-white/20 rounded-full h-2">
+            <div 
+              className="bg-white h-2 rounded-full transition-all duration-300"
+              style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
+            />
+          </div>
+          <p className="text-sm mt-2 opacity-90">
+            Step {currentStep + 1} of {steps.length}
+          </p>
+        </div>
+
+        {/* Content */}
+        <div className="p-6">
+          <div className="text-center mb-6">
+            <div className="flex justify-center mb-4">
+              {currentStepData.icon}
             </div>
-            <h2 className="text-2xl font-bold text-[#0F2557]">Welcome to Hustl</h2>
-            <p className="text-gray-600 mt-1">
-              Your campus task marketplace - get help or earn money helping others
+            <h3 className="text-xl font-bold text-gray-900 mb-3">
+              {currentStepData.title}
+            </h3>
+            <p className="text-gray-600 leading-relaxed">
+              {currentStepData.content}
             </p>
           </div>
-          <div className="flex items-center">
+
+          {/* Audio controls */}
+          {isAudioEnabled && (
+            <div className="flex justify-center mb-6">
+              <button
+                onClick={playWelcomeMessage}
+                disabled={isPlaying}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors disabled:opacity-50"
+              >
+                <Play className={`w-4 h-4 ${isPlaying ? 'animate-pulse' : ''}`} />
+                {isPlaying ? 'Playing...' : 'Play Audio'}
+              </button>
+            </div>
+          )}
+
+          {/* Voice error message (only shown in development) */}
+          {voiceError && process.env.NODE_ENV === 'development' && (
+            <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-sm text-yellow-800">
+                <strong>Voice Note:</strong> {voiceError}
+              </p>
+            </div>
+          )}
+
+          {/* Navigation */}
+          <div className="flex justify-between items-center">
             <button
-              onClick={() => playStepAudio(currentStep)}
-              disabled={isPlayingAudio}
-              className={`mr-2 p-2 rounded-full ${isPlayingAudio ? 'bg-blue-100 text-[#0038FF]' : 'text-gray-500 hover:text-[#0038FF] hover:bg-blue-50'} transition-colors`}
-              aria-label="Play audio guide"
+              onClick={prevStep}
+              disabled={currentStep === 0}
+              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              <VolumeUp className={`w-6 h-6 ${isPlayingAudio ? 'animate-pulse' : ''}`} />
+              <ChevronLeft className="w-4 h-4" />
+              Previous
             </button>
-            <button 
-              onClick={() => {
-                markGuideAsShown();
-                onClose();
-              }}
-              className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-100 transition-colors"
-              aria-label="Close guide"
-            >
-              <X className="w-6 h-6" />
-            </button>
+
+            {currentStep === steps.length - 1 ? (
+              <button
+                onClick={onClose}
+                className="px-6 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 font-medium"
+              >
+                Get Started!
+              </button>
+            ) : (
+              <button
+                onClick={nextStep}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="w-full bg-gray-200 rounded-full h-2 mb-6 overflow-hidden">
-          <div 
-            className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] h-2 rounded-full transition-all duration-300"
-            style={{ width: `${(currentStep / 3) * 100}%` }}
-          ></div>
-        </div>
-
-        {/* Step Content */}
-        <div className="mb-8">
-          {currentStep === 1 && (
-            <div className="space-y-6">
-              <h3 className="text-xl font-semibold text-center">What would you like to do?</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <StarBorder color="#FF5A1F">
-                  <button
-                    onClick={() => {
-                      markGuideAsShown();
-                      onCreateTask?.();
-                    }}
-                    className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white p-5 rounded-lg hover:opacity-90 transition-colors group w-full"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <Package className="w-7 h-7" />
-                      <ArrowRight className="w-5 h-5 transform group-hover:translate-x-2 transition-transform" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-left mb-2">Post a Task</h3>
-                    <p className="text-left text-orange-100 text-sm">
-                      Need help with something? Create a task and find someone to help you.
-                    </p>
-                  </button>
-                </StarBorder>
-
-                <StarBorder color="#0038FF">
-                  <button
-                    onClick={() => {
-                      markGuideAsShown();
-                      onBrowseTasks?.();
-                    }}
-                    className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white p-5 rounded-lg hover:opacity-90 transition-colors group w-full"
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <DollarSign className="w-7 h-7" />
-                      <ArrowRight className="w-5 h-5 transform group-hover:translate-x-2 transition-transform" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-left mb-2">Browse Tasks</h3>
-                    <p className="text-left text-blue-100 text-sm">
-                      Want to earn money? Find tasks you can help with around campus.
-                    </p>
-                  </button>
-                </StarBorder>
-              </div>
-            </div>
-          )}
-
-          {currentStep === 2 && (
-            <div className="space-y-6">
-              <h3 className="text-xl font-semibold text-center flex items-center justify-center">
-                <Zap className="w-6 h-6 text-[#FF5A1F] mr-2" />
-                Popular Task Categories
-              </h3>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {CATEGORIES.map((category) => (
-                  <button
-                    key={category.name}
-                    onClick={() => handleCategoryClick(category.template)}
-                    className="bg-white px-3 py-3 rounded-xl text-sm hover:bg-gradient-to-r hover:from-[#0038FF] hover:to-[#0021A5] hover:text-white transition-all duration-300 flex items-center justify-center group shadow-sm border border-gray-200"
-                  >
-                    <span className="group-hover:text-white text-[#0F2557]">
-                      {category.icon}
-                    </span>
-                    {category.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {currentStep === 3 && (
-            <div className="space-y-6">
-              <h3 className="text-xl font-semibold text-center flex items-center justify-center">
-                <Award className="w-6 h-6 text-[#FF5A1F] mr-2" />
-                Key Features
-              </h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="premium-card p-4 hover:shadow-lg transition-all duration-300">
-                  <div className="w-12 h-12 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center mb-4 text-white shadow-md mx-auto">
-                    <Shield className="w-6 h-6" />
-                  </div>
-                  <h3 className="font-semibold mb-1 text-sm text-center">Safe & Secure</h3>
-                  <p className="text-gray-600 text-sm text-center">
-                    Verified UF students only with built-in safety features.
-                  </p>
-                </div>
-
-                <div className="premium-card p-4 hover:shadow-lg transition-all duration-300">
-                  <div className="w-12 h-12 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center mb-4 text-white shadow-md mx-auto">
-                    <Star className="w-6 h-6" />
-                  </div>
-                  <h3 className="font-semibold mb-1 text-sm text-center">Earn Points</h3>
-                  <p className="text-gray-600 text-sm text-center">
-                    Complete tasks to earn points and unlock rewards.
-                  </p>
-                </div>
-
-                <div className="premium-card p-4 hover:shadow-lg transition-all duration-300">
-                  <div className="w-12 h-12 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center mb-4 text-white shadow-md mx-auto">
-                    <DollarSign className="w-6 h-6" />
-                  </div>
-                  <h3 className="font-semibold mb-1 text-sm text-center">Flexible Earnings</h3>
-                  <p className="text-gray-600 text-sm text-center">
-                    Set your schedule and earn between classes.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="flex justify-between items-center">
-          {currentStep > 1 ? (
+        {/* Step indicators */}
+        <div className="flex justify-center gap-2 pb-6">
+          {steps.map((_, index) => (
             <button
-              onClick={prevStep}
-              className="text-[#0F2557] hover:text-[#0A1B3D] font-medium flex items-center"
-              disabled={isPlayingAudio}
-            >
-              <ChevronLeft className="w-5 h-5 mr-1" />
-              Back
-            </button>
-          ) : (
-            <button
-              onClick={() => {
-                markGuideAsShown();
-                onClose();
-              }}
-              className="text-gray-500 hover:text-gray-700 text-sm"
-              disabled={isPlayingAudio}
-            >
-              Skip Guide
-            </button>
-          )}
-
-          {currentStep < 3 ? (
-            <StarBorder color="#0038FF" className="inline-block">
-              <button
-                onClick={nextStep}
-                className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white px-5 py-2 rounded-lg flex items-center text-sm font-semibold"
-                disabled={isPlayingAudio}
-              >
-                Next
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </button>
-            </StarBorder>
-          ) : (
-            <StarBorder color="#FF5A1F" className="inline-block">
-              <button
-                onClick={handleGetStarted}
-                className="bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white px-5 py-2 rounded-lg flex items-center text-sm font-semibold"
-                disabled={isPlayingAudio}
-              >
-                Get Started
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </button>
-            </StarBorder>
-          )}
+              key={index}
+              onClick={() => setCurrentStep(index)}
+              className={`w-2 h-2 rounded-full transition-colors ${
+                index === currentStep ? 'bg-blue-600' : 'bg-gray-300'
+              }`}
+            />
+          ))}
         </div>
       </div>
     </div>
   );
-};
-
-export default QuickStartGuide;
+}

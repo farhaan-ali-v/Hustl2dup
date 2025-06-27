@@ -1,166 +1,124 @@
-import { toast } from 'react-hot-toast';
-
-// ElevenLabs API key
-const ELEVENLABS_API_KEY = 'sk_8f7afe9792da4eaa3aa03d77343c3b58d44d35a0e6f42541';
-
-interface SpeakOptions {
-  voiceId?: string;
-  volume?: number; // 0.0 to 1.0
-  model?: string;
-  stability?: number; // 0.0 to 1.0
-  similarityBoost?: number; // 0.0 to 1.0
+interface ElevenLabsError {
+  detail?: {
+    status?: string;
+    message?: string;
+  };
 }
 
-export const elevenLabsService = {
-  /**
-   * Converts text to speech using the ElevenLabs API.
-   * Plays the generated audio.
-   * @param text The text to convert to speech.
-   * @param options Optional parameters like voiceId and volume.
-   * @returns A Promise that resolves with the HTMLAudioElement if successful, or null if an error occurs.
-   */
-  async speakText(text: string, options?: SpeakOptions): Promise<HTMLAudioElement | null> {
-    if (!text.trim()) {
-      console.warn('Empty text provided to speakText');
-      return null;
+class ElevenLabsService {
+  private apiKey: string;
+  private baseUrl = 'https://api.elevenlabs.io/v1';
+
+  constructor() {
+    this.apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY || '';
+  }
+
+  private isServiceAvailable(): boolean {
+    return !!this.apiKey;
+  }
+
+  private handleApiError(error: any): never {
+    console.error('ElevenLabs API Error:', error);
+    
+    // Check if it's the specific "unusual activity" error
+    if (error.detail?.status === 'detected_unusual_activity') {
+      throw new Error('Voice features are temporarily unavailable. This may be due to ElevenLabs Free Tier restrictions. Please try again later or consider upgrading your ElevenLabs plan.');
+    }
+    
+    // Handle other common errors
+    if (error.status === 401) {
+      throw new Error('Voice features are unavailable due to authentication issues.');
+    }
+    
+    if (error.status === 429) {
+      throw new Error('Voice features are temporarily unavailable due to rate limiting. Please try again later.');
+    }
+    
+    // Generic error
+    throw new Error('Voice features are currently unavailable. Please try again later.');
+  }
+
+  async speakText(text: string, voiceId: string = 'EXAVITQu4vr4xnSDxMaL'): Promise<void> {
+    if (!this.isServiceAvailable()) {
+      console.warn('ElevenLabs API key not configured. Voice features disabled.');
+      return; // Silently fail if no API key
     }
 
     try {
-      // Default voice ID - Rachel (female voice)
-      const voiceId = options?.voiceId || '21m00Tcm4TlvDq8ikWAM';
-      
-      // Make direct request to ElevenLabs API
-      const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+      const response = await fetch(`${this.baseUrl}/text-to-speech/${voiceId}`, {
         method: 'POST',
         headers: {
+          'Accept': 'audio/mpeg',
           'Content-Type': 'application/json',
-          'xi-api-key': ELEVENLABS_API_KEY,
-          'Accept': 'audio/mpeg'
+          'xi-api-key': this.apiKey,
         },
         body: JSON.stringify({
-          text: text,
-          model_id: options?.model || 'eleven_monolingual_v1',
+          text,
+          model_id: 'eleven_monolingual_v1',
           voice_settings: {
-            stability: options?.stability || 0.5,
-            similarity_boost: options?.similarityBoost || 0.75
-          }
-        })
+            stability: 0.5,
+            similarity_boost: 0.5,
+          },
+        }),
       });
 
       if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Speech generation failed:', errorText);
-        throw new Error(errorText);
+        const errorData = await response.json().catch(() => ({}));
+        this.handleApiError(errorData);
       }
 
       const audioBlob = await response.blob();
       const audioUrl = URL.createObjectURL(audioBlob);
       const audio = new Audio(audioUrl);
-
-      if (options?.volume !== undefined) {
-        audio.volume = Math.max(0, Math.min(1, options.volume)); // Ensure volume is between 0 and 1
+      
+      return new Promise((resolve, reject) => {
+        audio.onended = () => {
+          URL.revokeObjectURL(audioUrl);
+          resolve();
+        };
+        audio.onerror = () => {
+          URL.revokeObjectURL(audioUrl);
+          reject(new Error('Failed to play audio'));
+        };
+        audio.play().catch(reject);
+      });
+    } catch (error: any) {
+      // If it's already our custom error, re-throw it
+      if (error.message.includes('Voice features are')) {
+        throw error;
       }
-
-      audio.play().catch(e => console.error("Error playing audio:", e));
-
-      // Clean up the object URL after the audio has finished playing
-      audio.onended = () => {
-        URL.revokeObjectURL(audioUrl);
-      };
-
-      return audio;
-
-    } catch (error) {
+      
+      // Handle network errors and other issues
       console.error('Error in speakText:', error);
-      toast.error('Error generating speech. Please try again later.');
-      return null;
+      throw new Error('Voice features are currently unavailable due to a network error.');
     }
-  },
+  }
 
-  /**
-   * Gets available voices from ElevenLabs API
-   * @returns A Promise that resolves with the list of voices
-   */
   async getVoices(): Promise<any[]> {
+    if (!this.isServiceAvailable()) {
+      console.warn('ElevenLabs API key not configured. Returning empty voices list.');
+      return [];
+    }
+
     try {
-      const response = await fetch('https://api.elevenlabs.io/v1/voices', {
-        method: 'GET',
+      const response = await fetch(`${this.baseUrl}/voices`, {
         headers: {
-          'xi-api-key': ELEVENLABS_API_KEY
-        }
+          'xi-api-key': this.apiKey,
+        },
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to get voices: ${response.statusText}`);
+        const errorData = await response.json().catch(() => ({}));
+        this.handleApiError(errorData);
       }
 
       const data = await response.json();
       return data.voices || [];
-    } catch (error) {
-      console.error('Error getting voices:', error);
-      return [];
+    } catch (error: any) {
+      console.error('Error fetching voices:', error);
+      return []; // Return empty array on error
     }
-  },
-
-  /**
-   * Gets the remaining character count for the API key
-   * @returns A Promise that resolves with the character count info
-   */
-  async getCharacterCount(): Promise<any> {
-    try {
-      const response = await fetch('https://api.elevenlabs.io/v1/user/subscription', {
-        method: 'GET',
-        headers: {
-          'xi-api-key': ELEVENLABS_API_KEY
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to get character count: ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (error) {
-      console.error('Error getting character count:', error);
-      return null;
-    }
-  },
-
-  /**
-   * Transcribes speech to text using the Web Speech API
-   * @param callback Function to call with the transcribed text
-   * @returns A function to stop listening
-   */
-  startSpeechRecognition(callback: (text: string) => void): () => void {
-    if (!('SpeechRecognition' in window) && !('webkitSpeechRecognition' in window)) {
-      toast.error('Speech recognition is not supported in your browser');
-      return () => {};
-    }
-
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    
-    recognition.onresult = (event: any) => {
-      const transcript = Array.from(event.results)
-        .map((result: any) => result[0])
-        .map((result: any) => result.transcript)
-        .join('');
-      
-      callback(transcript);
-    };
-    
-    recognition.onerror = (event: any) => {
-      console.error('Speech recognition error:', event.error);
-      toast.error(`Speech recognition error: ${event.error}`);
-    };
-    
-    recognition.start();
-    
-    return () => {
-      recognition.stop();
-    };
   }
-};
+}
+
+export const elevenLabsService = new ElevenLabsService();
