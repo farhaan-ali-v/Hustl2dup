@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowRight, Package, Star, DollarSign, Shield, X, Coffee, Book, Dog, Car, GraduationCap, Users, Printer, ChevronLeft, ChevronRight, Zap, Award, Trophy, VolumeUp } from 'lucide-react';
+import { ArrowRight, Package, Star, DollarSign, Shield, X, Coffee, Book, Dog, Car, GraduationCap, Users, Printer, ChevronLeft, ChevronRight, Zap, Award, Trophy, Volume as VolumeUp } from 'lucide-react';
 import { StarBorder } from './ui/star-border';
 import { elevenLabsService } from '../lib/elevenLabsService';
 
