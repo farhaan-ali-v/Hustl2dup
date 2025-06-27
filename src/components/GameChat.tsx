@@ -84,7 +84,7 @@ const GameChat: React.FC<GameChatProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const { currentLanguage, autoTranslate } = useTranslation();
+  const { currentLanguage } = useTranslation();
 
   useEffect(() => {
     if (!taskId || !currentUser?.uid || !otherUser?.id) {
@@ -488,6 +488,13 @@ const GameChat: React.FC<GameChatProps> = ({
     return '';
   };
 
+  const handleTranslateMessage = (messageId: string, translatedText: string) => {
+    setTranslatedMessages(prev => ({
+      ...prev,
+      [messageId]: translatedText
+    }));
+  };
+
   const renderReactions = (reactions: { [userId: string]: string } = {}) => {
     const reactionCounts: { [emoji: string]: number } = {};
     Object.values(reactions).forEach(emoji => {
@@ -526,13 +533,6 @@ const GameChat: React.FC<GameChatProps> = ({
     setShowMenu(false);
   };
 
-  const handleTranslateMessage = (messageId: string, translatedText: string) => {
-    setTranslatedMessages(prev => ({
-      ...prev,
-      [messageId]: translatedText
-    }));
-  };
-
   if (!taskId || !currentUser?.uid || !otherUser?.id) {
     return (
       <div className="flex flex-col h-full items-center justify-center text-gray-500">
@@ -546,43 +546,41 @@ const GameChat: React.FC<GameChatProps> = ({
       {/* Chat Header */}
       <div className="p-4 border-b bg-white shadow-lg rounded-t-2xl">
         <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <div className="relative mr-3 flex-shrink-0 cursor-pointer" onClick={handleViewProfile}>
-              {otherUserProfile?.avatar_url ? (
-                <img
-                  src={otherUserProfile.avatar_url}
-                  alt={otherUserProfile.full_name}
-                  className="w-10 h-10 rounded-full object-cover border-2 border-[#0038FF]"
-                />
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0038FF] to-[#FF5A1F] flex items-center justify-center">
-                  <User className="w-5 h-5 text-white" />
-                </div>
-              )}
-              <div className="absolute -bottom-1 -right-1 bg-[#FF5A1F] text-white text-xs px-1 py-0.5 rounded-full font-bold text-[10px]">
-                L{otherUserProfile?.level || 1}
+          <div className="relative mr-3 flex-shrink-0 cursor-pointer" onClick={handleViewProfile}>
+            {otherUserProfile?.avatar_url ? (
+              <img
+                src={otherUserProfile.avatar_url}
+                alt={otherUserProfile.full_name}
+                className="w-10 h-10 rounded-full object-cover border-2 border-[#0038FF]"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0038FF] to-[#FF5A1F] flex items-center justify-center">
+                <User className="w-5 h-5 text-white" />
+              </div>
+            )}
+            <div className="absolute -bottom-1 -right-1 bg-[#FF5A1F] text-white text-xs px-1 py-0.5 rounded-full font-bold text-[10px]">
+              L{otherUserProfile?.level || 1}
+            </div>
+          </div>
+          <div className="flex-1">
+            <div className="flex items-center space-x-2">
+              <h3 className="font-bold text-gray-900">{otherUserProfile?.full_name}</h3>
+              <div className="bg-gradient-to-r from-[#0038FF] to-[#FF5A1F] text-white text-xs px-2 py-1 rounded-full font-bold">
+                {getLevelTitle(otherUserProfile?.level || 1)}
               </div>
             </div>
-            <div className="flex-1">
-              <div className="flex items-center space-x-2">
-                <h3 className="font-bold text-gray-900">{otherUserProfile?.full_name}</h3>
-                <div className="bg-gradient-to-r from-[#0038FF] to-[#FF5A1F] text-white text-xs px-2 py-1 rounded-full font-bold">
-                  {getLevelTitle(otherUserProfile?.level || 1)}
+            <div className="flex items-center space-x-2 mt-1">
+              <div className={`w-2 h-2 rounded-full ${getConnectionStatusColor()}`}></div>
+              <p className="text-sm text-gray-500">
+                {connectionStatus === 'connected' ? 'Online' : 
+                 connectionStatus === 'connecting' ? 'Connecting...' : 'Offline'}
+              </p>
+              {otherUserProfile?.rating && (
+                <div className="flex items-center space-x-1">
+                  <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
+                  <span className="text-xs text-gray-600">{otherUserProfile.rating.toFixed(1)}</span>
                 </div>
-              </div>
-              <div className="flex items-center space-x-2 mt-1">
-                <div className={`w-2 h-2 rounded-full ${getConnectionStatusColor()}`}></div>
-                <p className="text-sm text-gray-500">
-                  {connectionStatus === 'connected' ? 'Online' : 
-                   connectionStatus === 'connecting' ? 'Connecting...' : 'Offline'}
-                </p>
-                {otherUserProfile?.rating && (
-                  <div className="flex items-center space-x-1">
-                    <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
-                    <span className="text-xs text-gray-600">{otherUserProfile.rating.toFixed(1)}</span>
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           </div>
           

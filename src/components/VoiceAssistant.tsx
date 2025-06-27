@@ -210,7 +210,7 @@ export default function VoiceAssistant({ onClose, userLocation }: VoiceAssistant
     setVoiceError(null);
     
     try {
-      // Use the audioManager to prevent multiple audio instances
+      // Use the modified ElevenLabs service that uses the audio manager
       await elevenLabsService.speakText(text, undefined, audioManager);
     } catch (error: any) {
       console.warn('Voice synthesis failed:', error.message);

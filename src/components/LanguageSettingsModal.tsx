@@ -8,16 +8,24 @@ interface LanguageSettingsModalProps {
 }
 
 const LanguageSettingsModal: React.FC<LanguageSettingsModalProps> = ({ onClose }) => {
-  const { currentLanguage, setLanguage, autoTranslate, setAutoTranslate } = useTranslation();
+  const { currentLanguage, setLanguage } = useTranslation();
   const [selectedLanguage, setSelectedLanguage] = useState(currentLanguage);
-  const [localAutoTranslate, setLocalAutoTranslate] = useState(autoTranslate);
+  const [autoTranslate, setAutoTranslate] = useState(false);
+  
+  useEffect(() => {
+    // Load auto-translate setting from localStorage
+    const savedAutoTranslate = localStorage.getItem('autoTranslate');
+    if (savedAutoTranslate) {
+      setAutoTranslate(savedAutoTranslate === 'true');
+    }
+  }, []);
   
   const handleSaveSettings = () => {
     // Save language preference
     setLanguage(selectedLanguage);
     
     // Save auto-translate setting
-    setAutoTranslate(localAutoTranslate);
+    localStorage.setItem('autoTranslate', autoTranslate.toString());
     
     onClose();
   };
@@ -51,8 +59,8 @@ const LanguageSettingsModal: React.FC<LanguageSettingsModalProps> = ({ onClose }
             <input
               type="checkbox"
               id="autoTranslate"
-              checked={localAutoTranslate}
-              onChange={(e) => setLocalAutoTranslate(e.target.checked)}
+              checked={autoTranslate}
+              onChange={(e) => setAutoTranslate(e.target.checked)}
               className="h-4 w-4 text-[#0021A5] focus:ring-[#0021A5] border-gray-300 rounded"
             />
             <label htmlFor="autoTranslate" className="ml-2 block text-sm text-gray-700">
