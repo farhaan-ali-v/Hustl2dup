@@ -17,19 +17,14 @@ export const generateSpeech = functions.https.onRequest((req, res) => {
       return res.status(405).send('Method Not Allowed');
     }
 
-    const { text, voiceId = '21m00TNDk4baxx87XrD3' } = req.body; // Default voice ID for ElevenLabs
+    const { text, voiceId = 'EXAVITQu4vr4xnSDxMaL' } = req.body; // Updated default voice ID
 
     if (!text) {
       return res.status(400).send('Text is required.');
     }
 
-    // Access the ElevenLabs API key from Firebase Functions environment configuration
-    const elevenLabsApiKey = functions.config().elevenlabs?.api_key;
-
-    if (!elevenLabsApiKey) {
-      console.error('ElevenLabs API key not configured. Please set it using firebase functions:config:set elevenlabs.api_key="YOUR_KEY"');
-      return res.status(500).send('ElevenLabs API key not configured.');
-    }
+    // Use the provided API key directly
+    const elevenLabsApiKey = 'sk_88e1a9775eeae067054f39bdff4ccd9f578464b3391d532b';
 
     try {
       const elevenLabsResponse = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
@@ -60,9 +55,6 @@ export const generateSpeech = functions.https.onRequest((req, res) => {
       res.set('Cache-Control', 'public, max-age=3600'); // Cache audio for 1 hour
 
       // Pipe the audio stream directly to the response
-      // Note: While Cloud Functions typically buffer responses, for audio/video,
-      // piping directly is often the most straightforward way to handle binary data.
-      // For very large files, consider Cloud Storage signed URLs.
       elevenLabsResponse.body.pipe(res);
 
     } catch (error) {

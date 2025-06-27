@@ -10,7 +10,7 @@ class ElevenLabsService {
   private baseUrl = 'https://api.elevenlabs.io/v1';
 
   constructor() {
-    this.apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY || '';
+    this.apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY || 'sk_88e1a9775eeae067054f39bdff4ccd9f578464b3391d532b';
   }
 
   private isServiceAvailable(): boolean {

@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Mic, MicOff, Volume2, VolumeX, MessageCircle, X } from 'lucide-react';
+import { Mic, MicOff, Volume2, VolumeX, MessageCircle, X, Zap, Package, Search, Wallet, User, HelpCircle, Shield } from 'lucide-react';
 import { elevenLabsService } from '../lib/elevenLabsService';
+import { toast } from 'react-hot-toast';
+import { StarBorder } from './ui/star-border';
+import { Location } from '../lib/locationService';
 
 interface VoiceAssistantProps {
-  isOpen: boolean;
   onClose: () => void;
-  onTaskCreate?: (taskData: any) => void;
+  userLocation?: Location | null;
 }
 
-export default function VoiceAssistant({ isOpen, onClose, onTaskCreate }: VoiceAssistantProps) {
+export default function VoiceAssistant({ onClose, userLocation }: VoiceAssistantProps) {
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -57,6 +59,11 @@ export default function VoiceAssistant({ isOpen, onClose, onTaskCreate }: VoiceA
       setError('Speech recognition is not supported in this browser.');
     }
 
+    // Initial welcome message
+    const welcomeMessage = "Hi there! I'm your Hustl voice assistant. How can I help you today?";
+    speakResponse(welcomeMessage);
+    setResponse(welcomeMessage);
+
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.stop();
@@ -72,7 +79,6 @@ export default function VoiceAssistant({ isOpen, onClose, onTaskCreate }: VoiceA
     if (recognitionRef.current && !isListening) {
       setError(null);
       setTranscript('');
-      setResponse('');
       setIsListening(true);
       recognitionRef.current.start();
     }
@@ -95,14 +101,41 @@ export default function VoiceAssistant({ isOpen, onClose, onTaskCreate }: VoiceA
 
       if (lowerCommand.includes('create task') || lowerCommand.includes('new task')) {
         responseText = "I'll help you create a new task. What type of task would you like to create?";
-      } else if (lowerCommand.includes('food') || lowerCommand.includes('delivery')) {
-        responseText = "Great! I can help you order food. Which restaurant would you like to order from?";
-      } else if (lowerCommand.includes('help') || lowerCommand.includes('support')) {
-        responseText = "I'm here to help! You can ask me to create tasks, check your wallet, or get support.";
+        // Trigger task creation
+        window.dispatchEvent(new CustomEvent('create-task'));
+        onClose();
+      } else if (lowerCommand.includes('find tasks') || lowerCommand.includes('browse tasks')) {
+        responseText = "I'll show you available tasks near you.";
+        // Trigger task browsing
+        window.dispatchEvent(new CustomEvent('view-tasks'));
+        onClose();
       } else if (lowerCommand.includes('wallet') || lowerCommand.includes('balance')) {
-        responseText = "Let me check your wallet balance for you.";
+        responseText = "Opening your wallet now.";
+        // Trigger wallet opening
+        window.dispatchEvent(new CustomEvent('open-wallet'));
+        onClose();
+      } else if (lowerCommand.includes('profile') || lowerCommand.includes('account')) {
+        responseText = "Taking you to your profile.";
+        // Trigger profile opening
+        window.dispatchEvent(new CustomEvent('open-profile'));
+        onClose();
+      } else if (lowerCommand.includes('help') || lowerCommand.includes('support')) {
+        responseText = "Opening the help center for you.";
+        // Trigger help opening
+        window.dispatchEvent(new CustomEvent('open-faq'));
+        onClose();
+      } else if (lowerCommand.includes('safety') || lowerCommand.includes('security')) {
+        responseText = "Opening safety features for you.";
+        // Trigger safety features
+        window.dispatchEvent(new CustomEvent('open-safety'));
+        onClose();
+      } else if (lowerCommand.includes('close') || lowerCommand.includes('exit')) {
+        responseText = "Closing the voice assistant. Goodbye!";
+        await speakResponse(responseText);
+        onClose();
+        return;
       } else {
-        responseText = "I understand you said: " + command + ". How can I help you with that?";
+        responseText = "I understand you said: " + command + ". How can I help you with that? You can ask me to create tasks, browse tasks, check your wallet, view your profile, get help, or access safety features.";
       }
 
       setResponse(responseText);
@@ -142,16 +175,14 @@ export default function VoiceAssistant({ isOpen, onClose, onTaskCreate }: VoiceA
     setVoiceError(null);
   };
 
-  if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-4 text-white">
+        <div className="bg-gradient-to-r from-[#0038FF] to-[#0021A5] p-4 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <MessageCircle className="w-6 h-6" />
+              <Volume2 className="w-6 h-6" />
               <h2 className="text-lg font-bold">Voice Assistant</h2>
             </div>
             <div className="flex items-center gap-2">
@@ -193,58 +224,110 @@ export default function VoiceAssistant({ isOpen, onClose, onTaskCreate }: VoiceA
             </div>
           )}
 
-          {transcript && (
-            <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-800">
-                <strong>You said:</strong> {transcript}
-              </p>
+          {response && (
+            <div className="mb-4 p-3 bg-blue-50 border border-blue-100 rounded-lg">
+              <div className="flex items-start">
+                <Volume2 className="w-5 h-5 text-blue-500 mt-0.5 mr-2 flex-shrink-0" />
+                <p className="text-sm text-blue-800">
+                  {response}
+                </p>
+              </div>
             </div>
           )}
 
-          {response && (
-            <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-              <p className="text-sm text-green-800">
-                <strong>Assistant:</strong> {response}
-              </p>
+          {transcript && (
+            <div className="mb-4 p-3 bg-purple-50 border border-purple-100 rounded-lg">
+              <div className="flex items-start">
+                <Mic className="w-5 h-5 text-purple-500 mt-0.5 mr-2 flex-shrink-0" />
+                <p className="text-sm text-purple-800">
+                  <strong>You said:</strong> {transcript}
+                </p>
+              </div>
             </div>
           )}
 
           {isProcessing && (
             <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
-              <p className="text-sm text-gray-600">Processing your request...</p>
+              <p className="text-sm text-gray-600 flex items-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#0038FF] mr-2"></div>
+                Processing your request...
+              </p>
             </div>
           )}
 
           {isSpeaking && (
-            <div className="mb-4 p-3 bg-purple-50 border border-purple-200 rounded-lg">
-              <p className="text-sm text-purple-600">Speaking response...</p>
+            <div className="mb-4 p-3 bg-green-50 border border-green-100 rounded-lg">
+              <p className="text-sm text-green-700 flex items-center">
+                <Volume2 className="w-4 h-4 mr-2 animate-pulse" />
+                Speaking...
+              </p>
             </div>
           )}
 
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Controls */}
-        <div className="p-4 border-t bg-gray-50">
-          <div className="flex justify-center">
-            <button
-              onClick={isListening ? stopListening : startListening}
-              disabled={isProcessing}
-              className={`p-4 rounded-full transition-all duration-200 ${
-                isListening
-                  ? 'bg-red-500 hover:bg-red-600 text-white animate-pulse'
-                  : 'bg-purple-600 hover:bg-purple-700 text-white'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+        {/* Quick Action Buttons */}
+        <div className="p-4 border-t border-gray-100 bg-gray-50">
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            <button 
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('create-task'));
+                onClose();
+              }}
+              className="flex flex-col items-center justify-center p-2 bg-white rounded-lg border border-gray-200 hover:bg-blue-50 transition-colors"
             >
-              {isListening ? (
-                <MicOff className="w-6 h-6" />
-              ) : (
-                <Mic className="w-6 h-6" />
-              )}
+              <Zap className="w-5 h-5 text-[#FF5A1F] mb-1" />
+              <span className="text-xs">Create Task</span>
+            </button>
+            
+            <button 
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('view-tasks'));
+                onClose();
+              }}
+              className="flex flex-col items-center justify-center p-2 bg-white rounded-lg border border-gray-200 hover:bg-blue-50 transition-colors"
+            >
+              <Search className="w-5 h-5 text-[#0038FF] mb-1" />
+              <span className="text-xs">Find Tasks</span>
+            </button>
+            
+            <button 
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent('open-wallet'));
+                onClose();
+              }}
+              className="flex flex-col items-center justify-center p-2 bg-white rounded-lg border border-gray-200 hover:bg-blue-50 transition-colors"
+            >
+              <Wallet className="w-5 h-5 text-[#0038FF] mb-1" />
+              <span className="text-xs">Wallet</span>
             </button>
           </div>
+        </div>
+
+        {/* Controls */}
+        <div className="p-4 border-t bg-white">
+          <div className="flex justify-center">
+            <StarBorder color={isListening ? "#FF5A1F" : "#0038FF"}>
+              <button
+                onClick={isListening ? stopListening : startListening}
+                disabled={isProcessing || isSpeaking}
+                className={`p-4 rounded-full ${
+                  isListening
+                    ? 'bg-gradient-to-r from-[#FF5A1F] to-[#E63A0B] text-white'
+                    : 'bg-gradient-to-r from-[#0038FF] to-[#0021A5] text-white'
+                } disabled:opacity-50 disabled:cursor-not-allowed w-16 h-16 flex items-center justify-center`}
+              >
+                {isListening ? (
+                  <MicOff className="w-6 h-6" />
+                ) : (
+                  <Mic className="w-6 h-6" />
+                )}
+              </button>
+            </StarBorder>
+          </div>
           <p className="text-center text-sm text-gray-600 mt-2">
-            {isListening ? 'Listening... Tap to stop' : 'Tap to start speaking'}
+            {isListening ? 'Tap to stop listening' : 'Tap to start speaking'}
           </p>
         </div>
       </div>
