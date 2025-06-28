@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Languages, Loader } from 'lucide-react';
 import { translationService } from '../lib/translationService';
 import { useTranslation } from './TranslationProvider';
-import { useTranslation as useLingoTranslation } from 'lingo.dev/react/client';
+import { useLingo as useLingoTranslation } from 'lingo.dev/react/client';
 
 interface TranslatableTextProps {
   text: string;
