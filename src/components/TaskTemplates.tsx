@@ -799,7 +799,7 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
           </div>
           
           <div className="premium-card p-6 text-center relative">
-            <div className="absolute -top-0 left-1/2 transform -translate-x-1/2">
+            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
               <div className="w-10 h-10 rounded-full bg-[#FF5A1F] text-white flex items-center justify-center text-xl font-bold shadow-lg">3</div>
             </div>
             <div className="pt-6">
