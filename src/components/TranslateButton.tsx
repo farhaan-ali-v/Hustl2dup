@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Languages, Loader } from 'lucide-react';
 import { translationService } from '../lib/translationService';
 import toast from 'react-hot-toast';
+import { useTranslation as useLingoTranslation } from 'lingo.dev/react/client';
 
 interface TranslateButtonProps {
   text: string;
@@ -19,6 +20,7 @@ const TranslateButton: React.FC<TranslateButtonProps> = ({
   targetLanguage = 'en'
 }) => {
   const [isTranslating, setIsTranslating] = useState(false);
+  const { t } = useLingoTranslation();
   
   const sizeClasses = {
     sm: 'p-1 text-xs',
@@ -37,7 +39,19 @@ const TranslateButton: React.FC<TranslateButtonProps> = ({
     
     setIsTranslating(true);
     try {
-      // First detect the language
+      // First try to use Lingo.dev's built-in translation
+      try {
+        const translated = t(text);
+        if (translated !== text) {
+          onTranslated(translated);
+          toast.success('Translation complete');
+          return;
+        }
+      } catch (e) {
+        console.warn('Lingo.dev translation failed, falling back to API:', e);
+      }
+      
+      // Fall back to API translation
       const detectedLanguage = await translationService.detectLanguage(text);
       
       // If text is already in target language, show a message

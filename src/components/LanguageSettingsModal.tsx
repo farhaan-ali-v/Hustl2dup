@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, Languages, Check, Globe, Info } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 import { useTranslation } from './TranslationProvider';
+import { useTranslation as useLingoTranslation } from 'lingo.dev/react/client';
 
 interface LanguageSettingsModalProps {
   onClose: () => void;
@@ -9,6 +10,7 @@ interface LanguageSettingsModalProps {
 
 const LanguageSettingsModal: React.FC<LanguageSettingsModalProps> = ({ onClose }) => {
   const { currentLanguage, setLanguage } = useTranslation();
+  const { t } = useLingoTranslation();
   const [selectedLanguage, setSelectedLanguage] = useState(currentLanguage);
   const [autoTranslate, setAutoTranslate] = useState(false);
   
@@ -36,7 +38,7 @@ const LanguageSettingsModal: React.FC<LanguageSettingsModalProps> = ({ onClose }
         <div className="p-4 border-b flex justify-between items-center">
           <h2 className="text-xl font-semibold flex items-center">
             <Languages className="w-6 h-6 text-[#0021A5] mr-2" />
-            Language Settings
+            {t("Language Settings")}
           </h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             <X className="w-6 h-6" />
@@ -46,7 +48,7 @@ const LanguageSettingsModal: React.FC<LanguageSettingsModalProps> = ({ onClose }
         <div className="p-6 space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Select Your Preferred Language
+              {t("Select Your Preferred Language")}
             </label>
             <LanguageSelector
               value={selectedLanguage}
@@ -64,7 +66,7 @@ const LanguageSettingsModal: React.FC<LanguageSettingsModalProps> = ({ onClose }
               className="h-4 w-4 text-[#0021A5] focus:ring-[#0021A5] border-gray-300 rounded"
             />
             <label htmlFor="autoTranslate" className="ml-2 block text-sm text-gray-700">
-              Automatically translate content to my language
+              {t("Automatically translate content to my language")}
             </label>
           </div>
           
@@ -72,9 +74,9 @@ const LanguageSettingsModal: React.FC<LanguageSettingsModalProps> = ({ onClose }
             <div className="flex items-start">
               <Info className="w-5 h-5 text-blue-500 mt-0.5 mr-2 flex-shrink-0" />
               <div>
-                <h4 className="text-sm font-medium text-blue-800">About Translation</h4>
+                <h4 className="text-sm font-medium text-blue-800">{t("About Translation")}</h4>
                 <p className="mt-1 text-sm text-blue-700">
-                  Translation is powered by Lingo.dev. While we strive for accuracy, automatic translations may not be perfect. You can always view the original text.
+                  {t("Translation is powered by Lingo.dev. While we strive for accuracy, automatic translations may not be perfect. You can always view the original text.")}
                 </p>
               </div>
             </div>
@@ -86,13 +88,13 @@ const LanguageSettingsModal: React.FC<LanguageSettingsModalProps> = ({ onClose }
               className="flex-1 bg-[#0021A5] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#001B8C] transition-colors flex items-center justify-center"
             >
               <Check className="w-5 h-5 mr-2" />
-              Save Settings
+              {t("Save Settings")}
             </button>
             <button
               onClick={onClose}
               className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
             >
-              Cancel
+              {t("Cancel")}
             </button>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { translationService } from '../lib/translationService';
+import { useLocale } from 'lingo.dev/react/client';
 
 interface TranslationContextType {
   currentLanguage: string;
@@ -24,21 +25,33 @@ interface TranslationProviderProps {
 export const TranslationProvider: React.FC<TranslationProviderProps> = ({ children }) => {
   const [currentLanguage, setCurrentLanguage] = useState<string>('en');
   const [isTranslating, setIsTranslating] = useState<boolean>(false);
+  const { locale, setLocale } = useLocale();
   
   useEffect(() => {
     // Load saved language preference from localStorage
     const savedLanguage = localStorage.getItem('preferredLanguage');
     if (savedLanguage) {
       setCurrentLanguage(savedLanguage);
+      setLocale(savedLanguage);
     } else {
       // Try to detect browser language
       const browserLang = navigator.language.split('-')[0];
       setCurrentLanguage(browserLang || 'en');
+      setLocale(browserLang || 'en');
     }
-  }, []);
+  }, [setLocale]);
+  
+  // When locale changes from Lingo, update our state
+  useEffect(() => {
+    if (locale && locale !== currentLanguage) {
+      setCurrentLanguage(locale);
+      localStorage.setItem('preferredLanguage', locale);
+    }
+  }, [locale, currentLanguage]);
   
   const setLanguage = (languageCode: string) => {
     setCurrentLanguage(languageCode);
+    setLocale(languageCode);
     localStorage.setItem('preferredLanguage', languageCode);
   };
   

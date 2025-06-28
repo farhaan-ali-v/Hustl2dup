@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Languages, Loader } from 'lucide-react';
 import { translationService } from '../lib/translationService';
 import { useTranslation } from './TranslationProvider';
+import { useTranslation as useLingoTranslation } from 'lingo.dev/react/client';
 
 interface TranslatableTextProps {
   text: string;
@@ -18,6 +19,7 @@ const TranslatableText: React.FC<TranslatableTextProps> = ({
   const [isTranslating, setIsTranslating] = useState(false);
   const [isTranslated, setIsTranslated] = useState(false);
   const { currentLanguage } = useTranslation();
+  const { t } = useLingoTranslation();
   
   useEffect(() => {
     // Reset translation when language changes
@@ -30,7 +32,19 @@ const TranslatableText: React.FC<TranslatableTextProps> = ({
     
     setIsTranslating(true);
     try {
-      // First detect the language
+      // First try to use Lingo.dev's built-in translation
+      try {
+        const translated = t(text);
+        if (translated !== text) {
+          setTranslatedText(translated);
+          setIsTranslated(true);
+          return;
+        }
+      } catch (e) {
+        console.warn('Lingo.dev translation failed, falling back to API:', e);
+      }
+      
+      // Fall back to API translation
       const detectedLanguage = await translationService.detectLanguage(text);
       
       // If text is already in target language, don't translate
