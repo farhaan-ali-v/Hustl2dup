@@ -764,61 +764,49 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
       </div>
 
       {/* How Hustl Works Section */}
-      <div className="my-16">
-        <h2 className="text-3xl font-bold text-center mb-4 flex items-center justify-center">
-          <Award className="w-8 h-8 text-[#FF5A1F] mr-2" />
-          How Hustl Works
-        </h2>
-        <p className="text-center text-gray-600 mb-12">Getting help is as easy as 1-2-3</p>
+<div className="my-16">
+  <h2 className="text-3xl font-bold text-center mb-4 flex items-center justify-center">
+    <Award className="w-8 h-8 text-[#FF5A1F] mr-2" />
+    How Hustl Works
+  </h2>
+  <p className="text-center text-gray-600 mb-12">Getting help is as easy as 1-2-3</p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="premium-card p-6 text-center relative">
-            <div className="absolute -top-0 left-1/2 transform -translate-x-1/2">
-              <div className="w-10 h-10 rounded-full bg-[#FF5A1F] text-white flex items-center justify-center text-xl font-bold shadow-lg">1</div>
-            </div>
-            <div className="pt-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#FF5A1F] to-[#E63A0B] rounded-full flex items-center justify-center text-white mx-auto mb-4 shadow-lg">
-                <Package className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">Post Your Task</h3>
-              <p className="text-gray-600">Describe what you need help with and set your budget</p>
-            </div>
-          </div>
-          
-          <div className="premium-card p-6 text-center relative">
-            <div className="absolute -top-0 left-1/2 transform -translate-x-1/2">
-              <div className="w-10 h-10 rounded-full bg-[#002B7F] text-white flex items-center justify-center text-xl font-bold shadow-lg">2</div>
-            </div>
-            <div className="pt-6">
-              <div className="w-16 h-16 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center text-white mx-auto mb-4 shadow-lg">
-                <Users className="w-8 h-8" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">Get Matched</h3>
-              <p className="text-gray-600">Ready students will see your task and offer to help</p>
-            </div>
-          </div>
-          
-          <div className="premium-card p-6 text-center relative">
-  {/* Step Number Badge */}
-  <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 z-10">
-    <div className="w-10 h-10 rounded-full bg-[#FF5A1F] text-white flex items-center justify-center text-xl font-bold shadow-md">
-      3
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+    {/* Card 1 */}
+    <div className="premium-card p-6 text-center">
+      <div className="w-16 h-16 bg-gradient-to-br from-[#FF5A1F] to-[#E63A0B] rounded-full flex items-center justify-center text-white mx-auto mb-4 shadow-lg">
+        <Package className="w-8 h-8" />
+      </div>
+      <h3 className="text-xl font-bold mb-2">Post Your Task</h3>
+      <p className="text-gray-600">
+        Describe what you need help with and set your budget
+      </p>
     </div>
-  </div>
 
-  {/* Main Content */}
-  <div className="pt-10">
-    <div className="w-16 h-16 bg-gradient-to-br from-[#FF5A1F] to-[#E63A0B] rounded-full flex items-center justify-center text-white mx-auto mb-6 shadow-lg">
-      <Star className="w-8 h-8" />
+    {/* Card 2 */}
+    <div className="premium-card p-6 text-center">
+      <div className="w-16 h-16 bg-gradient-to-br from-[#0038FF] to-[#0021A5] rounded-full flex items-center justify-center text-white mx-auto mb-4 shadow-lg">
+        <Users className="w-8 h-8" />
+      </div>
+      <h3 className="text-xl font-bold mb-2">Get Matched</h3>
+      <p className="text-gray-600">
+        Ready students will see your task and offer to help
+      </p>
     </div>
-    <h3 className="text-xl font-bold mb-2">Task Complete</h3>
-    <p className="text-gray-600">
-      Chat with your helper, track progress, and rate your experience
-    </p>
+
+    {/* Card 3 */}
+    <div className="premium-card p-6 text-center">
+      <div className="w-16 h-16 bg-gradient-to-br from-[#FF5A1F] to-[#E63A0B] rounded-full flex items-center justify-center text-white mx-auto mb-4 shadow-lg">
+        <Star className="w-8 h-8" />
+      </div>
+      <h3 className="text-xl font-bold mb-2">Task Complete</h3>
+      <p className="text-gray-600">
+        Chat with your helper, track progress, and rate your experience
+      </p>
+    </div>
   </div>
 </div>
-        </div>
-      </div>
+
 
       {/* Testimonials Section */}
       <div className="my-16 grid grid-cols-1 md:grid-cols-2 gap-8">
