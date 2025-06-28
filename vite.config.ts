@@ -25,9 +25,9 @@ export default defineConfig(() =>
     sourceLocale: 'en',
     targetLocales: ['es', 'fr', 'de'],
     models: {
-      es: 'mistral:mistral-small',
-      fr: 'mistral:mistral-small',
-      de: 'mistral:mistral-small',
+      'es': 'mistral:mistral-small',
+      'fr': 'mistral:mistral-small', 
+      'de': 'mistral:mistral-small',
     },
     lingoDir: 'src/lingo',
   })(viteConfig)
