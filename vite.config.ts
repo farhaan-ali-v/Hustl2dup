@@ -21,14 +21,11 @@ const viteConfig = {
 
 export default defineConfig(() =>
   lingoCompiler.vite({
-    sourceRoot: 'src',
-    sourceLocale: 'en',
-    targetLocales: ['es', 'fr', 'de'],
+    sourceRoot: "src",
+    sourceLocale: "en",
+    targetLocales: ["es", "fr", "de"],
     models: {
-      'es': 'mistral:mistral-small',
-      'fr': 'mistral:mistral-small', 
-      'de': 'mistral:mistral-small',
+      ":": "mistral:mistral-small",
     },
-    lingoDir: 'src/lingo',
-  })(viteConfig)
+  })(viteConfig),
 );
