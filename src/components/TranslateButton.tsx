@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Languages, Loader } from 'lucide-react';
 import { translationService } from '../lib/translationService';
 import toast from 'react-hot-toast';
-import { useLingo as useLingoTranslation } from 'lingo.dev/react/client';
+import { useLingo } from 'lingo.dev/react/client';
 
 interface TranslateButtonProps {
   text: string;
@@ -20,7 +20,7 @@ const TranslateButton: React.FC<TranslateButtonProps> = ({
   targetLanguage = 'en'
 }) => {
   const [isTranslating, setIsTranslating] = useState(false);
-  const { t } = useLingoTranslation();
+  const lingo = useLingo();
   
   const sizeClasses = {
     sm: 'p-1 text-xs',
@@ -41,11 +41,13 @@ const TranslateButton: React.FC<TranslateButtonProps> = ({
     try {
       // First try to use Lingo.dev's built-in translation
       try {
-        const translated = t(text);
-        if (translated !== text) {
-          onTranslated(translated);
-          toast.success('Translation complete');
-          return;
+        if (lingo.t) {
+          const translated = lingo.t(text);
+          if (translated !== text) {
+            onTranslated(translated);
+            toast.success('Translation complete');
+            return;
+          }
         }
       } catch (e) {
         console.warn('Lingo.dev translation failed, falling back to API:', e);

@@ -27,33 +27,39 @@ interface TranslationProviderProps {
 export const TranslationProvider: React.FC<TranslationProviderProps> = ({ children }) => {
   const [currentLanguage, setCurrentLanguage] = useState<string>('en');
   const [isTranslating, setIsTranslating] = useState<boolean>(false);
-  const { locale, setLocale, t } = useLingo();
+  const lingo = useLingo();
   
   useEffect(() => {
     // Load saved language preference from localStorage
     const savedLanguage = localStorage.getItem('preferredLanguage');
     if (savedLanguage) {
       setCurrentLanguage(savedLanguage);
-      setLocale(savedLanguage);
+      if (lingo.setLocale) {
+        lingo.setLocale(savedLanguage);
+      }
     } else {
       // Try to detect browser language
       const browserLang = navigator.language.split('-')[0];
       setCurrentLanguage(browserLang || 'en');
-      setLocale(browserLang || 'en');
+      if (lingo.setLocale) {
+        lingo.setLocale(browserLang || 'en');
+      }
     }
-  }, [setLocale]);
+  }, []);
   
   // When locale changes from Lingo, update our state
   useEffect(() => {
-    if (locale && locale !== currentLanguage) {
-      setCurrentLanguage(locale);
-      localStorage.setItem('preferredLanguage', locale);
+    if (lingo.locale && lingo.locale !== currentLanguage) {
+      setCurrentLanguage(lingo.locale);
+      localStorage.setItem('preferredLanguage', lingo.locale);
     }
-  }, [locale, currentLanguage]);
+  }, [lingo.locale, currentLanguage]);
   
   const setLanguage = (languageCode: string) => {
     setCurrentLanguage(languageCode);
-    setLocale(languageCode);
+    if (lingo.setLocale) {
+      lingo.setLocale(languageCode);
+    }
     localStorage.setItem('preferredLanguage', languageCode);
   };
   
@@ -80,7 +86,13 @@ export const TranslationProvider: React.FC<TranslationProviderProps> = ({ childr
       setLanguage,
       translateText,
       isTranslating,
-      t: t || ((text: string) => text)
+      t: (text: string) => {
+        try {
+          return lingo.t ? lingo.t(text) : text;
+        } catch (e) {
+          return text;
+        }
+      }
     }}>
       {children}
     </TranslationContext.Provider>

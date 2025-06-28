@@ -24,7 +24,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   const [languages, setLanguages] = useState<Language[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const { locale, setLocale } = useLingo();
+  const lingo = useLingo();
   
   // Common languages to show by default while loading
   const commonLanguages: Language[] = [
@@ -52,10 +52,10 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   
   useEffect(() => {
     // Sync with Lingo locale
-    if (locale && locale !== value) {
-      onChange(locale);
+    if (lingo.locale && lingo.locale !== value) {
+      onChange(lingo.locale);
     }
-  }, [locale, value, onChange]);
+  }, [lingo.locale, value, onChange]);
   
   const loadLanguages = async () => {
     setLoading(true);
@@ -80,7 +80,9 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   
   const handleSelectLanguage = (code: string) => {
     onChange(code);
-    setLocale(code); // Update Lingo locale
+    if (lingo.setLocale) {
+      lingo.setLocale(code);
+    }
     setIsOpen(false);
   };
   
