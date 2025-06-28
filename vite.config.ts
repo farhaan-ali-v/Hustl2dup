@@ -18,10 +18,20 @@ const viteConfig = {
 
 export default defineConfig(() =>
   lingoCompiler.vite({
-    sourceRoot: 'src',
-    targetLocales: ['es', 'fr', 'de'], // Target locales
+    sourceRoot: "src",
+    sourceLocale: "en",
+    targetLocales: ["es", "fr", "de"],
+
+    // Add this section:
     models: {
-      // Define models for each locale
-      ":": "mistral:mistral-small",}
-  })(viteConfig)
+      ":": "mistral:mistral-small", // You can use mistral-small, mistral-medium, etc.
+    },
+
+    // Optional prompt (good default):
+    prompt: Act as a professional software localization expert. Translate each string from {source} to {target}.
+Preserve placeholders like {name} and {{count}}, and do not translate technical terms like "API", "SDK", or "React".
+Maintain Markdown and code formatting. Match the tone and formality of the original.,
+
+    lingoDir: "src/lingo",
+  })(viteConfig),
 );
