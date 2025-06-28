@@ -22,9 +22,6 @@ export default defineConfig(() =>
     targetLocales: ['es', 'fr', 'de'], // Target locales
     models: {
       // Define models for each locale
-      es: "mistral",
-      fr: "mistral",
-      de: "mistral"
-    },
+      ":": "mistral:mistral-small",
   })(viteConfig)
 );
