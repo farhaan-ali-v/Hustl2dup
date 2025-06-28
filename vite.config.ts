@@ -24,7 +24,10 @@ export default defineConfig(() =>
 
     // Add this section:
     models: {
-      ":": "mistral:mistral-small", // You can use mistral-small, mistral-medium, etc.
+        "es": "mistral:mistral-small",
+        "fr": "mistral:mistral-small",
+        "de": "mistral:mistral-small",
+ // You can use mistral-small, mistral-medium, etc.
     },
     lingoDir: "src/lingo",
   })(viteConfig),
