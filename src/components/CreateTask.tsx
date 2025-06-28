@@ -954,7 +954,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
                       onChange={(e) => setDescription(e.target.value)}
                       required
                       rows={3}
-                      className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-[#002B7F] focus:ring focus:ring-[#002B7F] focus:ring-opacity-50 px-4 py-3"
+                      className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0038FF] focus:border-[#0038FF] placeholder:text-gray-400 shadow-sm"
                       placeholder="Provide details about your task..."
                     />
                   </div>
