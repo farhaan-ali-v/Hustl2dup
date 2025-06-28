@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { translationService } from '../lib/translationService';
-import { useLocale } from 'lingo.dev/react/client';
+import { useLingo } from 'lingo.dev/react/client';
 
 interface TranslationContextType {
   currentLanguage: string;
@@ -25,7 +25,7 @@ interface TranslationProviderProps {
 export const TranslationProvider: React.FC<TranslationProviderProps> = ({ children }) => {
   const [currentLanguage, setCurrentLanguage] = useState<string>('en');
   const [isTranslating, setIsTranslating] = useState<boolean>(false);
-  const { locale, setLocale } = useLocale();
+  const { locale, setLocale } = useLingo();
   
   useEffect(() => {
     // Load saved language preference from localStorage
