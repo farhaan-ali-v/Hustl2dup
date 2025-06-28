@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
-import lingoCompiler from 'lingo.dev/compiler';
 import dotenv from 'dotenv';
 
 // Load environment variables from .env file
@@ -19,13 +18,4 @@ const viteConfig = {
   },
 };
 
-export default defineConfig(() =>
-  lingoCompiler.vite({
-    sourceRoot: "src",
-    sourceLocale: "en",
-    targetLocales: ["es", "fr", "de"],
-    models: {
-      ":": "mistral:mistral-small",
-    },
-  })(viteConfig),
-);
+export default defineConfig(viteConfig);
