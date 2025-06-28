@@ -20,6 +20,8 @@ export default defineConfig(() =>
   lingoCompiler.vite({
     sourceRoot: 'src',
     targetLocales: ['es', 'fr', 'de'], // You can customize these
-    models: "lingo.dev",
+    models: {
+      ":": "mistral:mistral-7b-instruct"
+    }
   })(viteConfig)
 );
