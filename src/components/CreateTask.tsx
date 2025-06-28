@@ -895,10 +895,11 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
                   >
                     <div className="flex items-center mb-3">
                       <div className="w-12 h-12 rounded-full border-2 border-[#0038FF] bg-white flex items-center justify-center shadow-md">
-  <div className="text-[#FF5A1F] w-5 h-5">
-    {category.icon}
+  <div className="w-6 h-6 flex items-center justify-center text-[#FF5A1F]">
+    {React.cloneElement(category.icon, { className: "w-5 h-5" })}
   </div>
 </div>
+
                     </div>
                     <h3 className="font-bold text-lg mb-1">{category.title}</h3>
                     <p className="text-gray-600 text-sm mb-3 line-clamp-2">{category.description}</p>
