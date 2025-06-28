@@ -947,7 +947,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
       Title
     </label>
   </div>
-</div>
+
 
 
                   <div>
