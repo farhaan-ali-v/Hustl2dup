@@ -1,4 +1,3 @@
-import 'dotenv/config';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
@@ -19,10 +18,13 @@ const viteConfig = {
 
 export default defineConfig(() =>
   lingoCompiler.vite({
-    sourceRoot: "src",
-    targetLocales: ["es", "fr", "de"],
+    sourceRoot: 'src',
+    targetLocales: ['es', 'fr', 'de'], // Target locales
     models: {
-      ":": "mistral-ai/mistral-7b-instruct",
+      // Define models for each locale
+      es: "mistral",
+      fr: "mistral",
+      de: "mistral"
     },
-  })(viteConfig),
+  })(viteConfig)
 );
