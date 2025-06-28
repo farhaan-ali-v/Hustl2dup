@@ -929,21 +929,20 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
                 </h3>
                 
                 <div className="space-y-4">
-  <div>
-    <label className="block text-sm font-medium text-gray-600 mb-1 flex items-center">
-      <Tag className="w-4 h-4 mr-1 text-gray-500" />
-      Title
-    </label>
-    <input
-      type="text"
-      value={title}
-      onChange={(e) => setTitle(e.target.value)}
-      required
-      className="w-full rounded-md border border-gray-300 focus:border-[#002B7F] focus:ring-2 focus:ring-[#002B7F]/20 px-4 py-2 placeholder:text-gray-400 text-sm"
-      placeholder="Type here..."
-    />
-  </div>
-
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
+                      <Tag className="w-4 h-4 mr-1 text-gray-500" />
+                      Title
+                    </label>
+                    <input
+                      type="text"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      required
+                      className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0038FF] focus:border-[#0038FF] placeholder:text-gray-400 shadow-sm"
+                      placeholder="What do you need help with?"
+                    />
+                  </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center">
