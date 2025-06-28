@@ -1,5 +1,4 @@
 import { auth } from './firebase';
-import { useLingo } from 'lingo.dev/react/client';
 
 interface TranslationOptions {
   targetLanguage: string;
@@ -143,13 +142,3 @@ class TranslationService {
 }
 
 export const translationService = new TranslationService();
-
-// Hook to use Lingo.dev translations directly
-export function useLingoTranslation() {
-  const { locale, setLocale } = useLingo();
-  
-  return {
-    currentLanguage: locale || 'en',
-    setLanguage: setLocale,
-  };
-}

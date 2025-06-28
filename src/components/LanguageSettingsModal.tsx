@@ -2,15 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { X, Languages, Check, Globe, Info } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 import { useTranslation } from './TranslationProvider';
-import { useTranslation as useLingoTranslation } from 'lingo.dev/react/client';
 
 interface LanguageSettingsModalProps {
   onClose: () => void;
 }
 
 const LanguageSettingsModal: React.FC<LanguageSettingsModalProps> = ({ onClose }) => {
-  const { currentLanguage, setLanguage } = useTranslation();
-  const { t } = useLingoTranslation();
+  const { currentLanguage, setLanguage, t } = useTranslation();
   const [selectedLanguage, setSelectedLanguage] = useState(currentLanguage);
   const [autoTranslate, setAutoTranslate] = useState(false);
   

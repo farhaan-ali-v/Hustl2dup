@@ -7,13 +7,15 @@ interface TranslationContextType {
   setLanguage: (languageCode: string) => void;
   translateText: (text: string) => Promise<string>;
   isTranslating: boolean;
+  t: (text: string) => string;
 }
 
 const TranslationContext = createContext<TranslationContextType>({
   currentLanguage: 'en',
   setLanguage: () => {},
   translateText: async (text) => text,
-  isTranslating: false
+  isTranslating: false,
+  t: (text) => text
 });
 
 export const useTranslation = () => useContext(TranslationContext);
@@ -25,7 +27,7 @@ interface TranslationProviderProps {
 export const TranslationProvider: React.FC<TranslationProviderProps> = ({ children }) => {
   const [currentLanguage, setCurrentLanguage] = useState<string>('en');
   const [isTranslating, setIsTranslating] = useState<boolean>(false);
-  const { locale, setLocale } = useLingo();
+  const { locale, setLocale, t } = useLingo();
   
   useEffect(() => {
     // Load saved language preference from localStorage
@@ -77,7 +79,8 @@ export const TranslationProvider: React.FC<TranslationProviderProps> = ({ childr
       currentLanguage,
       setLanguage,
       translateText,
-      isTranslating
+      isTranslating,
+      t: t || ((text: string) => text)
     }}>
       {children}
     </TranslationContext.Provider>

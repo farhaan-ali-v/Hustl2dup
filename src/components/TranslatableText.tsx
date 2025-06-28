@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Languages, Loader } from 'lucide-react';
 import { translationService } from '../lib/translationService';
 import { useTranslation } from './TranslationProvider';
-import { useLingo as useLingoTranslation } from 'lingo.dev/react/client';
 
 interface TranslatableTextProps {
   text: string;
@@ -18,8 +17,7 @@ const TranslatableText: React.FC<TranslatableTextProps> = ({
   const [translatedText, setTranslatedText] = useState<string | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
   const [isTranslated, setIsTranslated] = useState(false);
-  const { currentLanguage } = useTranslation();
-  const { t } = useLingoTranslation();
+  const { currentLanguage, t } = useTranslation();
   
   useEffect(() => {
     // Reset translation when language changes
