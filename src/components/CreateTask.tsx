@@ -929,25 +929,20 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
                 </h3>
                 
                 <div className="space-y-4">
-  <div className="relative">
-    <input
-      type="text"
-      id="taskTitle"
-      value={title}
-      onChange={(e) => setTitle(e.target.value)}
-      required
-      className="peer w-full px-4 pt-5 pb-2 rounded-lg border border-gray-300 shadow-sm placeholder-transparent focus:border-[#002B7F] focus:ring focus:ring-[#002B7F] focus:ring-opacity-50"
-      placeholder="What do you need help with?"
-    />
-    <label
-      htmlFor="taskTitle"
-      className="absolute left-4 top-2 text-sm text-gray-500 transition-all peer-placeholder-shown:top-4 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-focus:top-2 peer-focus:text-sm peer-focus:text-[#002B7F] flex items-center"
-    >
+  <div>
+    <label className="block text-sm font-medium text-gray-600 mb-1 flex items-center">
       <Tag className="w-4 h-4 mr-1 text-gray-500" />
       Title
     </label>
+    <input
+      type="text"
+      value={title}
+      onChange={(e) => setTitle(e.target.value)}
+      required
+      className="w-full rounded-md border border-gray-300 focus:border-[#002B7F] focus:ring-2 focus:ring-[#002B7F]/20 px-4 py-2 placeholder:text-gray-400 text-sm"
+      placeholder="Type here..."
+    />
   </div>
-
 
 
                   <div>
