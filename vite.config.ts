@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import lingoCompiler from 'lingo.dev/compiler';
+import 'dotenv/config';
 
 const viteConfig = {
   plugins: [react()],
