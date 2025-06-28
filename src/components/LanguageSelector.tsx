@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Languages, ChevronDown, Check, X, Search } from 'lucide-react';
 import { translationService } from '../lib/translationService';
 import toast from 'react-hot-toast';
-import { useLocale } from 'lingo.dev/react/client';
+import { useLingo } from 'lingo.dev/react/client';
 
 interface LanguageSelectorProps {
   value: string;
@@ -24,7 +24,7 @@ const LanguageSelector: React.FC<LanguageSelectorProps> = ({
   const [languages, setLanguages] = useState<Language[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const { locale, setLocale } = useLocale();
+  const { locale, setLocale } = useLingo();
   
   // Common languages to show by default while loading
   const commonLanguages: Language[] = [
