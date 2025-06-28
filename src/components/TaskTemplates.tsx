@@ -802,7 +802,7 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
             <div className="absolute top-3 left-1/2 transform -translate-x-1/2">
               <div className="w-10 h-10 rounded-full bg-[#FF5A1F] text-white flex items-center justify-center text-xl font-bold shadow-lg">3</div>
             </div>
-            <div className="pt-11">
+            <div className="pt-10">
               <div className="w-15 h-15 bg-gradient-to-br from-[#FF5A1F] to-[#E63A0B] rounded-full flex items-center justify-center text-white mx-auto mb-4 shadow-lg">
                 <Star className="w-8 h-8" />
               </div>
