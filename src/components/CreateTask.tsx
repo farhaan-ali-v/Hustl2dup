@@ -928,7 +928,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
                   Task Details
                 </h3>
                 
-<div className="space-y-4">
+                <div className="space-y-4">
   <div className="relative">
     <input
       type="text"
