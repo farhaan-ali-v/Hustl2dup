@@ -224,7 +224,7 @@ const SafeWalkRequestForm: React.FC<SafeWalkRequestFormProps> = ({ onClose }) =>
   }
 
   return (
-    <div className="bg-white rounded-2xl p-6 max-w-md w-full">
+    <div className="bg-white rounded-2xl p-4 sm:p-6 w-full max-w-lg mx-auto overflow-y-auto max-h-[90vh]">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold flex items-center">
           <Shield className="w-6 h-6 text-[#0038FF] mr-2" />
