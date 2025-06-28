@@ -769,7 +769,7 @@ const TaskTemplates: React.FC<TaskTemplatesProps> = ({
     <Award className="w-8 h-8 text-[#FF5A1F] mr-2" />
     How Hustl Works
   </h2>
-  <p className="text-center text-gray-600 mb-12">Getting help is as easy as 1-2-3</p>
+  <p className="text-center text-gray-600 mb-12">Help is just a few clicks away!</p>
 
   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
     {/* Card 1 */}
