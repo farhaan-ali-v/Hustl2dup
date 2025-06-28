@@ -1049,7 +1049,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
                         value={estimatedTime}
                         onChange={(e) => setEstimatedTime(e.target.value)}
                         required
-                        className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0038FF] focus:border-[#0038FF] placeholder:text-gray-400 shadow-sm"
+                        className="block w-full pl-10 rounded-lg border-gray-300 focus:border-[#002B7F] focus:ring focus:ring-[#002B7F] focus:ring-opacity-50 px-4 py-3"
                         placeholder="e.g. 30 minutes"
                       />
                     </div>
