@@ -22,7 +22,9 @@ export default defineConfig(() =>
     sourceRoot: 'src',
     targetLocales: ['es', 'fr', 'de'], // You can customize these
     models: {
-      ":": "mistral:mistral-7b-instruct"
+      "es": "mistral:mistral-7b-instruct",
+      "fr": "mistral:mistral-7b-instruct",
+      "de": "mistral:mistral-7b-instruct"
     }
   })(viteConfig)
 );
