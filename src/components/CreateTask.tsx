@@ -969,7 +969,7 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
                         required
-                        className="appearance-none mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-[#0038FF] focus:ring focus:ring-[#0038FF] focus:ring-opacity-50 px-4 py-3 pr-10"
+                        className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0038FF] focus:border-[#0038FF] placeholder:text-gray-400 shadow-sm"
                       >
                         <option value="delivery">Delivery</option>
                         <option value="academic_help">Academic Help</option>
