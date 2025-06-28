@@ -2,7 +2,10 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 import lingoCompiler from 'lingo.dev/compiler';
-import 'dotenv/config';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 const viteConfig = {
   plugins: [react()],
