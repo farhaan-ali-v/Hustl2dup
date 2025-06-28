@@ -25,6 +25,7 @@ import SafeWalkRequestForm from './components/SafeWalkRequestForm';
 import VoiceAssistant from './components/VoiceAssistant';
 import LanguageSettingsModal from './components/LanguageSettingsModal';
 import { useTranslation } from './components/TranslationProvider';
+import { LocaleSwitcher } from "lingo.dev/react/client";
 
 const CATEGORY_GROUPS = [
   {
