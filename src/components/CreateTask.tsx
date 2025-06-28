@@ -1039,7 +1039,8 @@ const CreateTask: React.FC<CreateTaskProps> = ({ onClose, userLocation, selected
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Time</label>
+                    <label className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#0038FF] focus:border-[#0038FF] placeholder:text-gray-400 shadow-sm"
+>Estimated Time</label>
                     <div className="mt-1 relative rounded-lg shadow-sm">
                       <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <Clock className="h-5 w-5 text-gray-400" />
