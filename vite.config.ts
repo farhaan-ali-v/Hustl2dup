@@ -20,7 +20,12 @@ const viteConfig = {
 export default defineConfig(() =>
   lingoCompiler.vite({
     sourceRoot: 'src',
-    targetLocales: ['es', 'fr', 'de'], // You can customize these
+    targetLocales: ['es', 'fr', 'de'],
+    llm: {
+      mistral: {
+        apiKey: process.env.MISTRAL_API_KEY
+      }
+    },
     models: {
       "es": "mistral:mistral-7b-instruct",
       "fr": "mistral:mistral-7b-instruct",
