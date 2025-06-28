@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 import lingoCompiler from 'lingo.dev/compiler';
 
-// Wrap your config using lingoCompiler.vite()
 const viteConfig = {
   plugins: [react()],
   resolve: {
@@ -18,17 +17,14 @@ const viteConfig = {
 
 export default defineConfig(() =>
   lingoCompiler.vite({
-    sourceRoot: "src",
-    sourceLocale: "en",
-    targetLocales: ["es", "fr", "de"],
-
-    // Add this section:
+    sourceRoot: 'src',
+    sourceLocale: 'en',
+    targetLocales: ['es', 'fr', 'de'],
     models: {
-        "es": "mistral:mistral-small",
-        "fr": "mistral:mistral-small",
-        "de": "mistral:mistral-small",
- // You can use mistral-small, mistral-medium, etc.
+      es: 'mistral:mistral-small',
+      fr: 'mistral:mistral-small',
+      de: 'mistral:mistral-small',
     },
-    lingoDir: "src/lingo",
-  })(viteConfig),
+    lingoDir: 'src/lingo',
+  })(viteConfig)
 );
